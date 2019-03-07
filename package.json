@@ -50,6 +50,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^9.4.6",
+    "sanitize.css": "^8.0.0",
     "express": "^4.16.4"
   }
 }
