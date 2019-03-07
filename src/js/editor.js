@@ -21,6 +21,7 @@ class PageBuilder {
   constructor (selector, options) {
     this.selector = selector.length > 0 ? selector[0] : selector
     this.className = 'pgBld'
+    this.textarea = 'div.' + this.className + '-textarea'
 
     let customOptions = options || {}
     this.options = {}
@@ -34,7 +35,7 @@ class PageBuilder {
     this._createInterface()
     this._createMenu()
     this._createBody()
-    this._crudRow()
+    this._createRow()
   }
 
   _changeSelector () {
@@ -73,17 +74,6 @@ class PageBuilder {
     }, this.value)
 
     this.wrapBlock.appendChild(this.body)
-  }
-
-  _createEl (el, options = {}, inner = '') {
-    let elem = document.createElement(el)
-    forEachObj(options, (key, value) => {
-      elem.setAttribute(key, value)
-    })
-
-    elem.innerHTML = inner
-
-    return elem
   }
 
   _createRowMenu (row) {
@@ -126,66 +116,130 @@ class PageBuilder {
     row.firstChild ? row.insertBefore(this.rowMenu, row.firstChild) : row.appendChild(this.rowMenu)
   }
 
-  _crudRow () {
-    let _this = this
-    _this.rows = _this.body.querySelectorAll('div.' + _this.className + '-row')
+  _createRow () {
+    this.rows = this.body.querySelectorAll('div.' + this.className + '-row')
 
-    forEachArr(_this.rows, (el) => {
+    forEachArr(this.rows, (el) => {
       this._createRowMenu(el)
-      reloadFunc(el)
+      this._connectMenuFunc(el)
+
+      addTiny(this.textarea)
     })
 
-    on(_this.menuItem.add, 'click', function () {
-      let row = _this._createEl('div', {
-        'class': _this.className + '-row'
+    on(this.menuItem.add, 'click', () => {
+      let row = this._createEl('div', {
+        'class': this.className + '-row',
+        'data-col': 0
       })
 
-      _this.body.appendChild(row)
-      _this._createRowMenu(row)
-      _this.rows = _this.body.querySelectorAll('div.' + _this.className + '-row')
-      reloadFunc(row)
+      this.body.appendChild(row)
+      this._createRowMenu(row)
+      this.rows = this.body.querySelectorAll('div.' + this.className + '-row')
+      this._connectMenuFunc(row)
+      this._createTextarea(row)
+    })
+  }
+
+  _createCol (el, row) {
+    on(el, 'click', () => {
+      let col = this._createEl('div', { 'class': this.className + '-col' })
+      let del = this._createEl('div', { 'class': this.className + '-col-del' }, svg.delete)
+      let num = row.dataset.col
+      col.appendChild(del)
+      row.appendChild(col)
+
+      row.dataset.col = row.querySelectorAll('.' + this.className + '-col').length
+      this._removeCol(del, col)
+
+      if (num === '0') {
+        let textarea = row.firstChild.nextSibling
+        textarea.innerHTML = tinymce.get(textarea.id).getContent()
+        tinymce.remove('div#' + textarea.id)
+        col.appendChild(textarea)
+        addTiny(this.textarea)
+        el.click()
+      } else {
+        this._createTextarea(col)
+      }
+    })
+  }
+
+  _connectMenuFunc (row) {
+    forEachArr(row.querySelectorAll('div.' + this.className + '-row-menu li'), (el) => {
+      if (el.dataset.role === 'delRow') {
+        this._removeRow(el, row)
+      } else if (el.dataset.role === 'addCol') {
+        this._createCol(el, row)
+      }
+    })
+  }
+
+  _removeRow (el, row) {
+    on(el, 'click', () => {
+      forEachArr(row.querySelectorAll(this.textarea), (el) => {
+        tinymce.remove('div#' + el.id)
+      })
+
+      row.parentElement.removeChild(row)
+    })
+  }
+
+  _removeCol (el, column) {
+    let _this = this
+    on(el, 'click', function () {
+      let parent = column.parentElement
+      tinymce.remove('div#' + this.nextSibling.id)
+      parent.removeChild(column)
+
+      if (parent.dataset.col === '2') {
+        let col = parent.querySelector('div.' + _this.className + '-col')
+        let textarea = col.firstChild.nextSibling
+        textarea.innerHTML = tinymce.get(textarea.id).getContent()
+        tinymce.remove('div#' + textarea.id)
+        parent.insertBefore(textarea, col)
+        parent.removeChild(col)
+        addTiny(_this.textarea)
+      }
+
+      parent.dataset.col = parent.querySelectorAll('.' + this.className).length
+    })
+  }
+
+  _createTextarea (parent) {
+    let textarea = this._createEl('div', { 'class': this.className + '-textarea' })
+    parent.appendChild(textarea)
+    addTiny(this.textarea)
+  }
+
+  _createEl (el, options = {}, inner = '') {
+    let elem = document.createElement(el)
+    forEachObj(options, (key, value) => {
+      elem.setAttribute(key, value)
     })
 
-    function reloadFunc (row) {
-      forEachArr(row.querySelectorAll('div.' + _this.className + '-row-menu li'), (el) => {
-        if (el.dataset.role === 'delRow') {
-          _this._removeRow(el)
-        } else if (el.dataset.role === 'addCol') {
-          _this._crudCol(el)
-        }
+    elem.innerHTML = inner
+
+    return elem
+  }
+}
+
+function addTiny (className) {
+  tinymce.init({
+    menubar: false,
+    selector: className,
+    plugins: 'link table lists paste',
+    toolbar: 'formatselect | table',
+    setup: function (editor) {
+      editor.ui.registry.addContextToolbar('textselection', {
+        predicate: function (node) {
+          return !editor.selection.isCollapsed()
+        },
+        items: 'bold italic underline | bullist numlist | alignleft aligncenter alignright',
+        position: 'selection',
+        scope: 'node'
       })
     }
-  }
-
-  _crudCol (el) {
-    let _this = this
-
-    on(el, 'click', function () {
-      let col = _this._createEl('div', { 'class': _this.className + '-col' })
-      let textarea = _this._createEl('div', { 'class': 'textarea' })
-      let del = _this._createEl('div', { 'class': _this.className + '-col-del' }, svg.delete)
-
-      col.appendChild(del)
-      col.appendChild(textarea)
-      this.parentElement.parentElement.parentElement.appendChild(col)
-
-      _this._removeCol(del)
-    })
-  }
-
-  _removeRow (el) {
-    this._remove(el, this.body, el.offsetParent.offsetParent)
-  }
-
-  _removeCol (el) {
-    this._remove(el, el.offsetParent.offsetParent, el.offsetParent)
-  }
-
-  _remove (el, parent, child) {
-    on(el, 'click', function () {
-      parent.removeChild(child)
-    })
-  }
+  })
 }
 
 function checkSelector (selector) {
@@ -217,13 +271,6 @@ function on (elem, event, func) {
   } else {
     elem.attachEvent('on' + event, func)
   }
-}
-
-Math.easeInOutQuad = function (t, b, c, d) {
-  t /= d / 2
-  if (t < 1) return c / 2 * t * t + b
-  t--
-  return -c / 2 * (t * (t - 2) - 1) + b
 }
 
 // For IE function closest https://developer.mozilla.org/en-US/docs/Web/API/Element/closest

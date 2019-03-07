@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 1);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -127,16 +127,17 @@ var PageBuilder =
 /*#__PURE__*/
 function () {
   function PageBuilder(selector, options) {
-    var _this = this;
+    var _this2 = this;
 
     _classCallCheck(this, PageBuilder);
 
     this.selector = selector.length > 0 ? selector[0] : selector;
     this.className = 'pgBld';
+    this.textarea = 'div.' + this.className + '-textarea';
     var customOptions = options || {};
     this.options = {};
     forEachObj(defaults, function (key, value) {
-      _this.options[key] = customOptions.hasOwnProperty(key) ? customOptions[key] : value;
+      _this2.options[key] = customOptions.hasOwnProperty(key) ? customOptions[key] : value;
     });
   }
 
@@ -170,7 +171,7 @@ function () {
   }, {
     key: "_createMenu",
     value: function _createMenu() {
-      var _this2 = this;
+      var _this3 = this;
 
       this.menu = this._createEl('ul', {
         'class': this.className + '-menu'
@@ -182,7 +183,7 @@ function () {
       };
       this.wrapBlock.appendChild(this.menu);
       forEachObj(this.menuItem, function (key, value) {
-        _this2.menu.appendChild(value);
+        _this3.menu.appendChild(value);
       });
     }
   }, {
@@ -196,7 +197,7 @@ function () {
   }, {
     key: "_createRowMenu",
     value: function _createRowMenu(row) {
-      var _this3 = this;
+      var _this4 = this;
 
       this.rowMenu = this._createEl('div', {
         'class': this.className + '-row-menu'
@@ -223,90 +224,135 @@ function () {
       };
       forEachObj(menuItems, function (key, value) {
         forEachObj(value.items, function (name, el) {
-          el.classList = _this3.className + '-row-menu-' + name;
+          el.classList = _this4.className + '-row-menu-' + name;
           value.menu.appendChild(el);
         });
-        value.menu.classList = _this3.className + '-row-menu-' + key;
+        value.menu.classList = _this4.className + '-row-menu-' + key;
 
-        _this3.rowMenu.appendChild(value.menu);
+        _this4.rowMenu.appendChild(value.menu);
       });
       row.firstChild ? row.insertBefore(this.rowMenu, row.firstChild) : row.appendChild(this.rowMenu);
     }
   }, {
     key: "_createRow",
     value: function _createRow() {
-      var _this4 = this;
+      var _this5 = this;
 
       this.rows = this.body.querySelectorAll('div.' + this.className + '-row');
       forEachArr(this.rows, function (el) {
-        _this4._createRowMenu(el);
+        _this5._createRowMenu(el);
 
-        _this4._connectMenuFunc(el);
+        _this5._connectMenuFunc(el);
 
-        addTiny();
+        addTiny(_this5.textarea);
       });
       on(this.menuItem.add, 'click', function () {
-        var row = _this4._createEl('div', {
-          'class': _this4.className + '-row'
+        var row = _this5._createEl('div', {
+          'class': _this5.className + '-row',
+          'data-col': 0
         });
 
-        _this4.body.appendChild(row);
+        _this5.body.appendChild(row);
 
-        _this4._createRowMenu(row);
+        _this5._createRowMenu(row);
 
-        _this4.rows = _this4.body.querySelectorAll('div.' + _this4.className + '-row');
+        _this5.rows = _this5.body.querySelectorAll('div.' + _this5.className + '-row');
 
-        _this4._connectMenuFunc(row);
+        _this5._connectMenuFunc(row);
+
+        _this5._createTextarea(row);
       });
     }
   }, {
     key: "_createCol",
     value: function _createCol(el, row) {
-      var _this5 = this;
+      var _this6 = this;
 
       on(el, 'click', function () {
-        var col = _this5._createEl('div', {
-          'class': _this5.className + '-col'
+        var col = _this6._createEl('div', {
+          'class': _this6.className + '-col'
         });
 
-        var textarea = _this5._createEl('div', {
-          'class': _this5.className + '-textarea'
-        });
-
-        var del = _this5._createEl('div', {
-          'class': _this5.className + '-col-del'
+        var del = _this6._createEl('div', {
+          'class': _this6.className + '-col-del'
         }, _svg__WEBPACK_IMPORTED_MODULE_0__["default"].delete);
 
+        var num = row.dataset.col;
         col.appendChild(del);
-        col.appendChild(textarea);
         row.appendChild(col);
-        addTiny();
+        row.dataset.col = row.querySelectorAll('.' + _this6.className + '-col').length;
 
-        _this5._removeCol(del, col);
+        _this6._removeCol(del, col);
+
+        if (num === '0') {
+          var textarea = row.firstChild.nextSibling;
+          textarea.innerHTML = tinymce.get(textarea.id).getContent();
+          tinymce.remove('div#' + textarea.id);
+          col.appendChild(textarea);
+          addTiny(_this6.textarea);
+          el.click();
+        } else {
+          _this6._createTextarea(col);
+        }
       });
     }
   }, {
     key: "_connectMenuFunc",
     value: function _connectMenuFunc(row) {
-      var _this6 = this;
+      var _this7 = this;
 
       forEachArr(row.querySelectorAll('div.' + this.className + '-row-menu li'), function (el) {
         if (el.dataset.role === 'delRow') {
-          _this6._removeRow(el, row);
+          _this7._removeRow(el, row);
         } else if (el.dataset.role === 'addCol') {
-          _this6._createCol(el, row);
+          _this7._createCol(el, row);
         }
       });
     }
   }, {
     key: "_removeRow",
     value: function _removeRow(el, row) {
-      this._remove(el, row.parentElement, row);
+      var _this8 = this;
+
+      on(el, 'click', function () {
+        forEachArr(row.querySelectorAll(_this8.textarea), function (el) {
+          tinymce.remove('div#' + el.id);
+        });
+        row.parentElement.removeChild(row);
+      });
     }
   }, {
     key: "_removeCol",
     value: function _removeCol(el, column) {
-      this._remove(el, column.parentElement, column);
+      var _this = this;
+
+      on(el, 'click', function () {
+        var parent = column.parentElement;
+        tinymce.remove('div#' + this.nextSibling.id);
+        parent.removeChild(column);
+
+        if (parent.dataset.col === '2') {
+          var col = parent.querySelector('div.' + _this.className + '-col');
+          var textarea = col.firstChild.nextSibling;
+          textarea.innerHTML = tinymce.get(textarea.id).getContent();
+          tinymce.remove('div#' + textarea.id);
+          parent.insertBefore(textarea, col);
+          parent.removeChild(col);
+          addTiny(_this.textarea);
+        }
+
+        parent.dataset.col = parent.querySelectorAll('.' + this.className).length;
+      });
+    }
+  }, {
+    key: "_createTextarea",
+    value: function _createTextarea(parent) {
+      var textarea = this._createEl('div', {
+        'class': this.className + '-textarea'
+      });
+
+      parent.appendChild(textarea);
+      addTiny(this.textarea);
     }
   }, {
     key: "_createEl",
@@ -320,41 +366,27 @@ function () {
       elem.innerHTML = inner;
       return elem;
     }
-  }, {
-    key: "_remove",
-    value: function _remove(el, parent, child) {
-      on(el, 'click', function () {
-        parent.removeChild(child);
-      });
-    }
   }]);
 
   return PageBuilder;
 }();
 
-function addTiny(selector) {
+function addTiny(className) {
   tinymce.init({
-    selector: 'div.pgBld-textarea',
     menubar: false,
-    resize: 'vertical',
-    external_plugins: {
-      'link': '/js/plugins/link/plugin.min.js',
-      'image': '/js/plugins/image/plugin.min.js',
-      'code': '/js/plugins/code/plugin.min.js',
-      'table': '/js/plugins/table/plugin.min.js',
-      'lists': '/js/plugins/lists/plugin.min.js',
-      'paste': '/js/plugins/paste/plugin.min.js'
-    },
-    extended_valid_elements: 'input[id|name|value|type|class|style|required|placeholder|autocomplete|onclick]',
-    file_browser_callback: function file_browser_callback(field_name, url, type, win) {
-      if (type === 'image') {
-        $('#upload_file').trigger('click');
-      }
-    },
-    toolbar: 'styleselect bold italic underline | forecolor backcolor | alignleft aligncenter alignright | bullist numlist outdent indent | link image table | code',
-    convert_urls: false,
-    image_caption: true,
-    image_title: true
+    selector: className,
+    plugins: 'link table lists paste',
+    toolbar: 'formatselect | table',
+    setup: function setup(editor) {
+      editor.ui.registry.addContextToolbar('textselection', {
+        predicate: function predicate(node) {
+          return !editor.selection.isCollapsed();
+        },
+        items: 'bold italic underline | bullist numlist | alignleft aligncenter alignright',
+        position: 'selection',
+        scope: 'node'
+      });
+    }
   });
 }
 
@@ -407,6 +439,21 @@ if (window.Element && !Element.prototype.closest) {
 
 /***/ }),
 
+/***/ "./src/js/main.js":
+/*!************************!*\
+  !*** ./src/js/main.js ***!
+  \************************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _editor__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./editor */ "./src/js/editor.js");
+
+pageBuilder(document.querySelector('textarea'));
+
+/***/ }),
+
 /***/ "./src/js/svg.js":
 /*!***********************!*\
   !*** ./src/js/svg.js ***!
@@ -424,26 +471,14 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/sass/editor.sass":
+/***/ 1:
 /*!******************************!*\
-  !*** ./src/sass/editor.sass ***!
+  !*** multi ./src/js/main.js ***!
   \******************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-
-/***/ 0:
-/*!*******************************************************!*\
-  !*** multi ./src/js/editor.js ./src/sass/editor.sass ***!
-  \*******************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\Users\Administrator\Desktop\111\Plugins\page-builder\src\js\editor.js */"./src/js/editor.js");
-module.exports = __webpack_require__(/*! C:\Users\Administrator\Desktop\111\Plugins\page-builder\src\sass\editor.sass */"./src/sass/editor.sass");
+module.exports = __webpack_require__(/*! C:\Users\Administrator\Desktop\111\Plugins\page-builder\src\js\main.js */"./src/js/main.js");
 
 
 /***/ })

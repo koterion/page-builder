@@ -1,11 +1,9 @@
-.textEditor
-  border-radius: 10px
-  border: 1px solid #000
-  min-height: 400px
+@import "~sanitize.css"
 
-.editor
+.pgBld
   &-menu
     display: flex
+
     li
       display: flex
       align-items: center
@@ -14,37 +12,99 @@
       border-radius: 5px
       cursor: pointer
 
+    &-item
+      &-add
+        svg
+          height: 14px
+          fill: green
+
   &-row
-    border: 1px dashed gray
     min-height: 200px
     position: relative
-    margin-bottom: 20px
+    margin-top: 40px
     display: flex
+    background: #e2e2e2
+    padding: 10px
 
     > *
       flex-grow: 1
 
-    &:before
-      content: 'row'
-      display: inline
+    &-menu
       position: absolute
+      display: flex
+      justify-content: space-between
       top: 0
       left: 0
-      border-bottom: 1px dashed gray
-      border-right: 1px dashed gray
-      padding: 2px 4px
-      font-size: 12px
-      color: gray
+      transform: translateY(-100%)
+      width: 100%
 
-    &.active
-      border-color: black
-      border-style: solid
+      ul
+        list-style-type: none
+        margin: 0
+        padding: 0
 
-      &:before
-        border-bottom-color: black
-        border-right-color: black
-        border-bottom-style: solid
-        border-right-style: solid
+      &-delete
+        background: #ff005d
+        width: 25px
+        height: 25px
+        border-radius: 5px 5px 0 0
+        display: flex
+        justify-content: center
+        align-items: center
+        cursor: pointer
+        transition: opacity .4s
+
+        &:hover
+          opacity: .6
+
+        svg
+          height: 14px
+          fill: white
+
+      &-column
+        background: #4C6EF5
+        width: 50px
+        height: 25px
+        border-radius: 5px 5px 0 0
+        display: flex
+        justify-content: center
+        align-items: center
+        cursor: pointer
+        transition: opacity .4s
+
+        svg
+          height: 14px
+          fill: white
+
+  &-col
+    background: white
+    margin: 0 10px
+    position: relative
+
+    &-del
+      position: absolute
+      top: 0
+      right: 0
+      background: #ff005d
+      width: 25px
+      height: 25px
+      border-radius: 0 0 0 5px
+      justify-content: center
+      align-items: center
+      cursor: pointer
+      transition: opacity .4s
+      display: none
+
+      &:hover
+        opacity: .6
+
+      svg
+        height: 14px
+        fill: white
+
+    &:hover
+      .pgBld-col-del
+        display: flex
 
 .add
   width: 10px
