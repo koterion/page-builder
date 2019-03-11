@@ -318,6 +318,43 @@ class PageBuilder {
 
     return elem
   }
+
+  getContent () {
+    let html = this.body.cloneNode(true)
+    let rows = html.querySelectorAll('div.' + this.className + '-row')
+
+    forEachArr(rows, (row) => {
+      let menu = row.querySelector('div.' + this.className + '-row-menu')
+      row.removeChild(menu)
+      let cols = row.querySelectorAll('div.' + this.className + '-col')
+
+      if (cols.length > 0) {
+        forEachArr(cols, (col) => {
+          let del = col.querySelector('div.' + this.className + '-col-del')
+          let edit = col.querySelector('div.' + this.className + '-col-edit')
+          let content = col.querySelector('div.' + this.className + '-content')
+
+          content.removeAttribute('id')
+          content.removeAttribute('style')
+          content.removeAttribute('aria-hidden')
+
+          col.removeChild(del)
+          col.removeChild(edit)
+        })
+      } else {
+        let content = row.querySelector('div.' + this.className + '-content')
+        let tox = row.querySelector('div.tox')
+        content.innerHTML = tinymce.get(content.id).getContent()
+        content.classList.remove(this.textareaClass)
+        content.removeAttribute('id')
+        content.removeAttribute('style')
+        content.removeAttribute('aria-hidden')
+        row.removeChild(tox)
+      }
+    })
+
+    return html.innerHTML
+  }
 }
 
 function addTiny (className) {

@@ -479,6 +479,42 @@ function () {
       elem.innerHTML = inner;
       return elem;
     }
+  }, {
+    key: "getContent",
+    value: function getContent() {
+      var _this9 = this;
+
+      var html = this.body.cloneNode(true);
+      var rows = html.querySelectorAll('div.' + this.className + '-row');
+      forEachArr(rows, function (row) {
+        var menu = row.querySelector('div.' + _this9.className + '-row-menu');
+        row.removeChild(menu);
+        var cols = row.querySelectorAll('div.' + _this9.className + '-col');
+
+        if (cols.length > 0) {
+          forEachArr(cols, function (col) {
+            var del = col.querySelector('div.' + _this9.className + '-col-del');
+            var edit = col.querySelector('div.' + _this9.className + '-col-edit');
+            var content = col.querySelector('div.' + _this9.className + '-content');
+            content.removeAttribute('id');
+            content.removeAttribute('style');
+            content.removeAttribute('aria-hidden');
+            col.removeChild(del);
+            col.removeChild(edit);
+          });
+        } else {
+          var content = row.querySelector('div.' + _this9.className + '-content');
+          var tox = row.querySelector('div.tox');
+          content.innerHTML = tinymce.get(content.id).getContent();
+          content.classList.remove(_this9.textareaClass);
+          content.removeAttribute('id');
+          content.removeAttribute('style');
+          content.removeAttribute('aria-hidden');
+          row.removeChild(tox);
+        }
+      });
+      return html.innerHTML;
+    }
   }]);
 
   return PageBuilder;
