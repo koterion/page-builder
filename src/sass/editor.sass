@@ -23,11 +23,17 @@
     position: relative
     margin-top: 40px
     display: flex
+    justify-content: space-between
     background: #e2e2e2
     padding: 10px
 
-    > *
-      flex-grow: 1
+    @for $i from 2 through 6
+      &[data-col = '#{$i}']
+        > *+*
+          width: 100%/$i - 1%
+
+    > *, .tox
+      width: 100%
 
     &-menu
       position: absolute
@@ -78,7 +84,7 @@
 
   &-col
     background: white
-    margin: 0 10px
+    padding: 20px
     position: relative
 
     &-del
@@ -102,9 +108,100 @@
         height: 14px
         fill: white
 
+    &-edit
+      position: absolute
+      top: 0
+      left: 0
+      background: grey
+      width: 50px
+      height: 25px
+      border-radius: 0 0 5px 0
+      justify-content: center
+      align-items: center
+      cursor: pointer
+      transition: opacity .4s
+      display: none
+
+      &:hover
+        opacity: .6
+
+      svg
+        height: 14px
+        fill: white
+
     &:hover
-      .pgBld-col-del
+      .pgBld-col-del, .pgBld-col-edit
         display: flex
+
+  &-editor
+    position: absolute
+    top: 0
+    left: 0
+    width: 100vw
+    height: 100vh
+    overflow: auto
+    display: none
+    align-items: center
+    justify-content: center
+    min-height: 650px
+    background: rgba(0,0,0,.5)
+    z-index: 999
+    padding: 30px
+
+    &.show
+      display: flex
+
+    &-block
+      max-width: 1000px
+      width: 100%
+      position: relative
+
+    &-close
+      position: absolute
+      right: 0
+      top: 0
+      transform: translateY(-100%)
+      background: #ff005d
+      width: 25px
+      height: 25px
+      border-radius: 5px 5px 0 0
+      display: flex
+      justify-content: center
+      align-items: center
+      cursor: pointer
+      transition: opacity .4s
+
+      &:hover
+        opacity: .6
+
+      svg
+        height: 16px
+        fill: white
+
+    &-save
+      position: absolute
+      left: 0
+      top: 0
+      transform: translateY(-100%)
+      background: green
+      width: 50px
+      height: 25px
+      border-radius: 5px 5px 0 0
+      display: flex
+      justify-content: center
+      align-items: center
+      cursor: pointer
+      transition: opacity .4s
+
+      &:hover
+        opacity: .6
+
+      svg
+        height: 16px
+        fill: white
+
+    .tox
+      max-height: 600px
 
 .add
   width: 10px

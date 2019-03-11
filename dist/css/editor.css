@@ -618,13 +618,29 @@ textarea,
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
   background: #e2e2e2;
   padding: 10px;
 }
-.pgBld-row > * {
-  -webkit-box-flex: 1;
-      -ms-flex-positive: 1;
-          flex-grow: 1;
+.pgBld-row[data-col="2"] > * + * {
+  width: 49%;
+}
+.pgBld-row[data-col="3"] > * + * {
+  width: 32.3333333333%;
+}
+.pgBld-row[data-col="4"] > * + * {
+  width: 24%;
+}
+.pgBld-row[data-col="5"] > * + * {
+  width: 19%;
+}
+.pgBld-row[data-col="6"] > * + * {
+  width: 15.6666666667%;
+}
+.pgBld-row > *, .pgBld-row .tox {
+  width: 100%;
 }
 .pgBld-row-menu {
   position: absolute;
@@ -697,7 +713,7 @@ textarea,
 }
 .pgBld-col {
   background: white;
-  margin: 0 10px;
+  padding: 20px;
   position: relative;
 }
 .pgBld-col-del {
@@ -727,10 +743,133 @@ textarea,
   height: 14px;
   fill: white;
 }
-.pgBld-col:hover .pgBld-col-del {
+.pgBld-col-edit {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: grey;
+  width: 50px;
+  height: 25px;
+  border-radius: 0 0 5px 0;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  cursor: pointer;
+  -webkit-transition: opacity 0.4s;
+  -o-transition: opacity 0.4s;
+  transition: opacity 0.4s;
+  display: none;
+}
+.pgBld-col-edit:hover {
+  opacity: 0.6;
+}
+.pgBld-col-edit svg {
+  height: 14px;
+  fill: white;
+}
+.pgBld-col:hover .pgBld-col-del, .pgBld-col:hover .pgBld-col-edit {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+}
+.pgBld-editor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+  display: none;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  min-height: 650px;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  padding: 30px;
+}
+.pgBld-editor.show {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+.pgBld-editor-block {
+  max-width: 1000px;
+  width: 100%;
+  position: relative;
+}
+.pgBld-editor-close {
+  position: absolute;
+  right: 0;
+  top: 0;
+  -webkit-transform: translateY(-100%);
+      -ms-transform: translateY(-100%);
+          transform: translateY(-100%);
+  background: #ff005d;
+  width: 25px;
+  height: 25px;
+  border-radius: 5px 5px 0 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  cursor: pointer;
+  -webkit-transition: opacity 0.4s;
+  -o-transition: opacity 0.4s;
+  transition: opacity 0.4s;
+}
+.pgBld-editor-close:hover {
+  opacity: 0.6;
+}
+.pgBld-editor-close svg {
+  height: 16px;
+  fill: white;
+}
+.pgBld-editor-save {
+  position: absolute;
+  left: 0;
+  top: 0;
+  -webkit-transform: translateY(-100%);
+      -ms-transform: translateY(-100%);
+          transform: translateY(-100%);
+  background: green;
+  width: 50px;
+  height: 25px;
+  border-radius: 5px 5px 0 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  cursor: pointer;
+  -webkit-transition: opacity 0.4s;
+  -o-transition: opacity 0.4s;
+  transition: opacity 0.4s;
+}
+.pgBld-editor-save:hover {
+  opacity: 0.6;
+}
+.pgBld-editor-save svg {
+  height: 16px;
+  fill: white;
+}
+.pgBld-editor .tox {
+  max-height: 600px;
 }
 
 .add {

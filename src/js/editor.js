@@ -15,13 +15,37 @@ window.pageBuilder = function (selector, options) {
   return list
 }
 
-let defaults = {}
+let defaults = {
+  tinymce: {
+    settings: (className) => {
+      tinymce.init({
+        menubar: false,
+        selector: className,
+        height: 400,
+        plugins: 'link table lists paste',
+        toolbar: 'formatselect | table',
+        setup: function (editor) {
+          editor.ui.registry.addContextToolbar('textselection', {
+            predicate: function (node) {
+              return !editor.selection.isCollapsed()
+            },
+            items: 'bold italic underline | bullist numlist | alignleft aligncenter alignright',
+            position: 'selection',
+            scope: 'node'
+          })
+        }
+      })
+    }
+  }
+}
 
 class PageBuilder {
   constructor (selector, options) {
     this.selector = selector.length > 0 ? selector[0] : selector
     this.className = 'pgBld'
-    this.textarea = 'div.' + this.className + '-textarea'
+    this.textareaClass = this.className + '-textarea'
+    this.textareaEditor = this.className + '-editor-textarea'
+    this.textarea = 'div.' + this.textareaClass
 
     let customOptions = options || {}
     this.options = {}
@@ -35,6 +59,7 @@ class PageBuilder {
     this._createInterface()
     this._createMenu()
     this._createBody()
+    this._createEditor()
     this._createRow()
   }
 
@@ -74,6 +99,52 @@ class PageBuilder {
     }, this.value)
 
     this.wrapBlock.appendChild(this.body)
+  }
+
+  _createEditor () {
+    let _this = this
+    _this.editor = _this._createEl('div', {
+      'class': _this.className + '-editor'
+    })
+
+    let block = _this._createEl('div', {
+      'class': _this.className + '-editor-block'
+    })
+
+    let close = _this._createEl('div', {
+      'class': _this.className + '-editor-close',
+      'title': 'Close'
+    }, svg.close)
+
+    let save = _this._createEl('div', {
+      'class': _this.className + '-editor-save',
+      'title': 'Save'
+    }, svg.save)
+
+    _this.editor.appendChild(block)
+    block.appendChild(close)
+    block.appendChild(save)
+    _this._createTextarea(block, _this.textareaEditor)
+
+    _this.wrapBlock.appendChild(_this.editor)
+
+    on(close, 'click', function () {
+      closeEditor()
+    })
+
+    on(save, 'click', function () {
+      let content = closeEditor()
+
+      content.innerHTML = block.querySelector('div.' + _this.textareaEditor).innerHTML
+    })
+
+    function closeEditor () {
+      let content = _this.wrapBlock.querySelector('.changing')
+      _this.editor.classList.remove('show')
+      tinymce.remove('div#' + block.querySelector('div.' + _this.textareaEditor).id)
+
+      return content
+    }
   }
 
   _createRowMenu (row) {
@@ -123,6 +194,12 @@ class PageBuilder {
       this._createRowMenu(el)
       this._connectMenuFunc(el)
 
+      let col = el.querySelector('div.' + this.className + '-col')
+
+      if (!el.contains(col)) {
+        el.querySelector('div.' + this.className + '-content').classList.add(this.textareaClass)
+      }
+
       addTiny(this.textarea)
     })
 
@@ -136,30 +213,39 @@ class PageBuilder {
       this._createRowMenu(row)
       this.rows = this.body.querySelectorAll('div.' + this.className + '-row')
       this._connectMenuFunc(row)
-      this._createTextarea(row)
+      this._createTextarea(row, this.className + '-content ' + this.textareaClass)
     })
   }
 
   _createCol (el, row) {
+    let _this = this
+
     on(el, 'click', () => {
-      let col = this._createEl('div', { 'class': this.className + '-col' })
-      let del = this._createEl('div', { 'class': this.className + '-col-del' }, svg.delete)
       let num = row.dataset.col
-      col.appendChild(del)
-      row.appendChild(col)
 
-      row.dataset.col = row.querySelectorAll('.' + this.className + '-col').length
-      this._removeCol(del, col)
+      if (num < 6) {
+        let col = this._createEl('div', { 'class': this.className + '-col' })
+        let del = this._createEl('div', { 'class': this.className + '-col-del' }, svg.delete)
+        let edit = this._createEl('div', { 'class': this.className + '-col-edit' }, svg.edit)
+        let content = this._createEl('div', { 'class': this.className + '-content' })
+        col.appendChild(del)
+        col.appendChild(edit)
+        row.appendChild(col)
 
-      if (num === '0') {
-        let textarea = row.firstChild.nextSibling
-        textarea.innerHTML = tinymce.get(textarea.id).getContent()
-        tinymce.remove('div#' + textarea.id)
-        col.appendChild(textarea)
-        addTiny(this.textarea)
-        el.click()
-      } else {
-        this._createTextarea(col)
+        row.dataset.col = row.querySelectorAll('.' + this.className + '-col').length
+
+        if (num === '0') {
+          content = row.querySelector(_this.textarea)
+          tinymce.remove('div#' + content.id)
+          content.classList.remove(_this.textareaClass)
+          col.appendChild(content)
+          el.click()
+        } else {
+          col.appendChild(content)
+        }
+
+        this._removeCol(del, col)
+        this._editContent(edit, col)
       }
     })
   }
@@ -188,15 +274,13 @@ class PageBuilder {
     let _this = this
     on(el, 'click', function () {
       let parent = column.parentElement
-      tinymce.remove('div#' + this.nextSibling.id)
       parent.removeChild(column)
 
       if (parent.dataset.col === '2') {
         let col = parent.querySelector('div.' + _this.className + '-col')
-        let textarea = col.firstChild.nextSibling
-        textarea.innerHTML = tinymce.get(textarea.id).getContent()
-        tinymce.remove('div#' + textarea.id)
-        parent.insertBefore(textarea, col)
+        let content = col.querySelector('div.' + _this.className + '-content')
+        content.classList.add(_this.textareaClass)
+        parent.appendChild(content)
         parent.removeChild(col)
         addTiny(_this.textarea)
       }
@@ -205,8 +289,21 @@ class PageBuilder {
     })
   }
 
-  _createTextarea (parent) {
-    let textarea = this._createEl('div', { 'class': this.className + '-textarea' })
+  _editContent (el, col) {
+    let _this = this
+
+    on(el, 'click', function () {
+      _this.editor.classList.add('show')
+      let content = col.querySelector('div.' + _this.className + '-content')
+      let editor = _this.editor.querySelector('div.' + _this.textareaEditor)
+      editor.innerHTML = content.innerHTML
+      content.classList.add('changing')
+      addTiny('div.' + _this.textareaEditor)
+    })
+  }
+
+  _createTextarea (parent, className = this.textareaClass) {
+    let textarea = this._createEl('div', { 'class': className })
     parent.appendChild(textarea)
     addTiny(this.textarea)
   }
@@ -224,22 +321,7 @@ class PageBuilder {
 }
 
 function addTiny (className) {
-  tinymce.init({
-    menubar: false,
-    selector: className,
-    plugins: 'link table lists paste',
-    toolbar: 'formatselect | table',
-    setup: function (editor) {
-      editor.ui.registry.addContextToolbar('textselection', {
-        predicate: function (node) {
-          return !editor.selection.isCollapsed()
-        },
-        items: 'bold italic underline | bullist numlist | alignleft aligncenter alignright',
-        position: 'selection',
-        scope: 'node'
-      })
-    }
-  })
+  defaults.tinymce.settings(className)
 }
 
 function checkSelector (selector) {
