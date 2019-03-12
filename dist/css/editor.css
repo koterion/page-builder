@@ -659,6 +659,9 @@ textarea,
 }
 .pgBld-row-menu ul {
   list-style-type: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
   margin: 0;
   padding: 0;
 }
@@ -692,7 +695,7 @@ textarea,
   background: #4C6EF5;
   width: 50px;
   height: 25px;
-  border-radius: 5px 5px 0 0;
+  border-radius: 0 5px 0 0;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -707,13 +710,39 @@ textarea,
   -o-transition: opacity 0.4s;
   transition: opacity 0.4s;
 }
+.pgBld-row-menu-column:hover {
+  opacity: 0.6;
+}
 .pgBld-row-menu-column svg {
   height: 14px;
   fill: white;
 }
+.pgBld-row-menu-edit {
+  background: grey;
+  width: 50px;
+  height: 25px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  cursor: pointer;
+  -webkit-transition: opacity 0.4s;
+  -o-transition: opacity 0.4s;
+  transition: opacity 0.4s;
+}
+.pgBld-row-menu-edit:hover {
+  opacity: 0.6;
+}
+.pgBld-row-menu-edit svg {
+  height: 14px;
+  fill: white;
+}
 .pgBld-col {
-  background: white;
-  padding: 20px;
   position: relative;
 }
 .pgBld-col-del {
@@ -775,7 +804,14 @@ textarea,
   display: -ms-flexbox;
   display: flex;
 }
-.pgBld-editor {
+.pgBld-col .pgBld-content {
+  height: 100%;
+}
+.pgBld-content {
+  background: white;
+  padding: 30px 20px;
+}
+.pgBld-editor, .pgBld-settings {
   position: absolute;
   top: 0;
   left: 0;
@@ -794,17 +830,17 @@ textarea,
   z-index: 999;
   padding: 30px;
 }
-.pgBld-editor.show {
+.pgBld-editor.show, .pgBld-settings.show {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
 }
-.pgBld-editor-block {
+.pgBld-editor-block, .pgBld-settings-block {
   max-width: 1000px;
   width: 100%;
   position: relative;
 }
-.pgBld-editor-close {
+.pgBld-editor-close, .pgBld-settings-close {
   position: absolute;
   right: 0;
   top: 0;
@@ -829,14 +865,14 @@ textarea,
   -o-transition: opacity 0.4s;
   transition: opacity 0.4s;
 }
-.pgBld-editor-close:hover {
+.pgBld-editor-close:hover, .pgBld-settings-close:hover {
   opacity: 0.6;
 }
-.pgBld-editor-close svg {
+.pgBld-editor-close svg, .pgBld-settings-close svg {
   height: 16px;
   fill: white;
 }
-.pgBld-editor-save {
+.pgBld-editor-save, .pgBld-settings-save {
   position: absolute;
   left: 0;
   top: 0;
@@ -861,15 +897,19 @@ textarea,
   -o-transition: opacity 0.4s;
   transition: opacity 0.4s;
 }
-.pgBld-editor-save:hover {
+.pgBld-editor-save:hover, .pgBld-settings-save:hover {
   opacity: 0.6;
 }
-.pgBld-editor-save svg {
+.pgBld-editor-save svg, .pgBld-settings-save svg {
   height: 16px;
   fill: white;
 }
-.pgBld-editor .tox {
+.pgBld-editor .tox, .pgBld-settings .tox {
   max-height: 600px;
+}
+.pgBld-settings-block {
+  min-height: 200px;
+  background: white;
 }
 
 .add {

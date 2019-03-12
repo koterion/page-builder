@@ -46,6 +46,7 @@
 
       ul
         list-style-type: none
+        display: flex
         margin: 0
         padding: 0
 
@@ -71,20 +72,38 @@
         background: #4C6EF5
         width: 50px
         height: 25px
-        border-radius: 5px 5px 0 0
+        border-radius: 0 5px 0 0
         display: flex
         justify-content: center
         align-items: center
         cursor: pointer
         transition: opacity .4s
 
+        &:hover
+          opacity: .6
+
+        svg
+          height: 14px
+          fill: white
+
+      &-edit
+        background: grey
+        width: 50px
+        height: 25px
+        display: flex
+        justify-content: center
+        align-items: center
+        cursor: pointer
+        transition: opacity .4s
+
+        &:hover
+          opacity: .6
+
         svg
           height: 14px
           fill: white
 
   &-col
-    background: white
-    padding: 20px
     position: relative
 
     &-del
@@ -133,7 +152,14 @@
       .pgBld-col-del, .pgBld-col-edit
         display: flex
 
-  &-editor
+    .pgBld-content
+      height: 100%
+
+  &-content
+    background: white
+    padding: 30px 20px
+
+  &-editor, &-settings
     position: absolute
     top: 0
     left: 0
@@ -202,6 +228,11 @@
 
     .tox
       max-height: 600px
+
+  &-settings
+    &-block
+      min-height: 200px
+      background: white
 
 .add
   width: 10px

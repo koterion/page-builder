@@ -60,6 +60,7 @@ class PageBuilder {
     this._createMenu()
     this._createBody()
     this._createEditor()
+    this._createRowSettings()
     this._createRow()
   }
 
@@ -142,9 +143,44 @@ class PageBuilder {
       let content = _this.wrapBlock.querySelector('.changing')
       _this.editor.classList.remove('show')
       tinymce.remove('div#' + block.querySelector('div.' + _this.textareaEditor).id)
-
+      content.classList.remove('changing')
       return content
     }
+  }
+
+  _createRowSettings () {
+    let _this = this
+    let className = _this.className + '-settings'
+    _this.rowSettings = _this._createEl('div', {
+      'class': className
+    })
+
+    let block = _this._createEl('div', {
+      'class': className + '-block'
+    })
+
+    let close = _this._createEl('div', {
+      'class': className + '-close',
+      'title': 'Close'
+    }, svg.close)
+
+    let save = _this._createEl('div', {
+      'class': className + '-save',
+      'title': 'Save'
+    }, svg.save)
+
+    _this.rowSettings.appendChild(block)
+    block.appendChild(close)
+    block.appendChild(save)
+    _this.wrapBlock.appendChild(_this.rowSettings)
+
+    on(close, 'click', function () {
+      _this.rowSettings.classList.remove('show')
+    })
+
+    on(save, 'click', function () {
+      _this.rowSettings.classList.remove('show')
+    })
   }
 
   _createRowMenu (row) {
@@ -156,6 +192,10 @@ class PageBuilder {
       'left': {
         'menu': this._createEl('ul'),
         'items': {
+          'edit': this._createEl('li', {
+            'title': 'Edit row style',
+            'data-role': 'editRow'
+          }, svg.edit),
           'column': this._createEl('li', {
             'title': 'Add column',
             'data-role': 'addCol'
@@ -192,15 +232,12 @@ class PageBuilder {
 
     forEachArr(this.rows, (el) => {
       this._createRowMenu(el)
+      let num = el.dataset.col
       this._connectMenuFunc(el)
 
-      let col = el.querySelector('div.' + this.className + '-col')
-
-      if (!el.contains(col)) {
-        el.querySelector('div.' + this.className + '-content').classList.add(this.textareaClass)
+      if (num < 1) {
+        this._createCol(el, num)
       }
-
-      addTiny(this.textarea)
     })
 
     on(this.menuItem.add, 'click', () => {
@@ -211,42 +248,9 @@ class PageBuilder {
 
       this.body.appendChild(row)
       this._createRowMenu(row)
+      this._createCol(row, 1)
       this.rows = this.body.querySelectorAll('div.' + this.className + '-row')
       this._connectMenuFunc(row)
-      this._createTextarea(row, this.className + '-content ' + this.textareaClass)
-    })
-  }
-
-  _createCol (el, row) {
-    let _this = this
-
-    on(el, 'click', () => {
-      let num = row.dataset.col
-
-      if (num < 6) {
-        let col = this._createEl('div', { 'class': this.className + '-col' })
-        let del = this._createEl('div', { 'class': this.className + '-col-del' }, svg.delete)
-        let edit = this._createEl('div', { 'class': this.className + '-col-edit' }, svg.edit)
-        let content = this._createEl('div', { 'class': this.className + '-content' })
-        col.appendChild(del)
-        col.appendChild(edit)
-        row.appendChild(col)
-
-        row.dataset.col = row.querySelectorAll('.' + this.className + '-col').length
-
-        if (num === '0') {
-          content = row.querySelector(_this.textarea)
-          tinymce.remove('div#' + content.id)
-          content.classList.remove(_this.textareaClass)
-          col.appendChild(content)
-          el.click()
-        } else {
-          col.appendChild(content)
-        }
-
-        this._removeCol(del, col)
-        this._editContent(edit, col)
-      }
     })
   }
 
@@ -255,7 +259,43 @@ class PageBuilder {
       if (el.dataset.role === 'delRow') {
         this._removeRow(el, row)
       } else if (el.dataset.role === 'addCol') {
-        this._createCol(el, row)
+        this._addCol(el, row)
+      } else if (el.dataset.role === 'editRow') {
+        this._showSetting(el, row)
+      }
+    })
+  }
+
+  _showSetting (el, row) {
+    let _this = this
+
+    on(el, 'click', () => {
+      this.rowSettings.classList.add('show')
+    })
+  }
+
+  _createCol (row, num) {
+    let col = this._createEl('div', { 'class': this.className + '-col' })
+    let del = this._createEl('div', { 'class': this.className + '-col-del' }, svg.delete)
+    let edit = this._createEl('div', { 'class': this.className + '-col-edit' }, svg.edit)
+
+    let content = num < 1 && row.querySelector('div.' + this.className + '-content') ? row.querySelector('div.' + this.className + '-content') : this._createEl('div', { 'class': this.className + '-content' })
+    col.appendChild(del)
+    col.appendChild(edit)
+    col.appendChild(content)
+    row.appendChild(col)
+    row.dataset.col = row.querySelectorAll('.' + this.className + '-col').length
+
+    this._removeCol(del, col)
+    this._editContent(edit, col)
+  }
+
+  _addCol (el, row) {
+    on(el, 'click', () => {
+      let num = row.dataset.col
+
+      if (num < 6) {
+        this._createCol(row, num)
       }
     })
   }
@@ -271,34 +311,21 @@ class PageBuilder {
   }
 
   _removeCol (el, column) {
-    let _this = this
-    on(el, 'click', function () {
+    on(el, 'click', () => {
       let parent = column.parentElement
       parent.removeChild(column)
-
-      if (parent.dataset.col === '2') {
-        let col = parent.querySelector('div.' + _this.className + '-col')
-        let content = col.querySelector('div.' + _this.className + '-content')
-        content.classList.add(_this.textareaClass)
-        parent.appendChild(content)
-        parent.removeChild(col)
-        addTiny(_this.textarea)
-      }
-
-      parent.dataset.col = parent.querySelectorAll('.' + this.className).length
+      parent.dataset.col = parent.querySelectorAll('.' + this.className + '-col').length
     })
   }
 
   _editContent (el, col) {
-    let _this = this
-
-    on(el, 'click', function () {
-      _this.editor.classList.add('show')
-      let content = col.querySelector('div.' + _this.className + '-content')
-      let editor = _this.editor.querySelector('div.' + _this.textareaEditor)
+    on(el, 'click', () => {
+      this.editor.classList.add('show')
+      let content = col.querySelector('div.' + this.className + '-content')
+      let editor = this.editor.querySelector('div.' + this.textareaEditor)
       editor.innerHTML = content.innerHTML
       content.classList.add('changing')
-      addTiny('div.' + _this.textareaEditor)
+      addTiny('div.' + this.textareaEditor)
     })
   }
 
@@ -328,7 +355,7 @@ class PageBuilder {
       row.removeChild(menu)
       let cols = row.querySelectorAll('div.' + this.className + '-col')
 
-      if (cols.length > 0) {
+      if (cols.length > 1) {
         forEachArr(cols, (col) => {
           let del = col.querySelector('div.' + this.className + '-col-del')
           let edit = col.querySelector('div.' + this.className + '-col-edit')
@@ -341,15 +368,17 @@ class PageBuilder {
           col.removeChild(del)
           col.removeChild(edit)
         })
-      } else {
-        let content = row.querySelector('div.' + this.className + '-content')
-        let tox = row.querySelector('div.tox')
-        content.innerHTML = tinymce.get(content.id).getContent()
-        content.classList.remove(this.textareaClass)
+      } else if (cols.length === 1) {
+        let content = cols[0].querySelector('div.' + this.className + '-content')
+
         content.removeAttribute('id')
         content.removeAttribute('style')
         content.removeAttribute('aria-hidden')
-        row.removeChild(tox)
+        cols[0].parentNode.dataset.col = 0
+        cols[0].parentNode.insertBefore(content, cols[0])
+        cols[0].parentNode.removeChild(cols[0])
+      } else {
+        row.parentNode.removeChild(row)
       }
     })
 

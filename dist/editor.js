@@ -178,6 +178,8 @@ function () {
 
       this._createEditor();
 
+      this._createRowSettings();
+
       this._createRow();
     }
   }, {
@@ -266,8 +268,47 @@ function () {
         _this.editor.classList.remove('show');
 
         tinymce.remove('div#' + block.querySelector('div.' + _this.textareaEditor).id);
+        content.classList.remove('changing');
         return content;
       }
+    }
+  }, {
+    key: "_createRowSettings",
+    value: function _createRowSettings() {
+      var _this = this;
+
+      var className = _this.className + '-settings';
+      _this.rowSettings = _this._createEl('div', {
+        'class': className
+      });
+
+      var block = _this._createEl('div', {
+        'class': className + '-block'
+      });
+
+      var close = _this._createEl('div', {
+        'class': className + '-close',
+        'title': 'Close'
+      }, _svg__WEBPACK_IMPORTED_MODULE_0__["default"].close);
+
+      var save = _this._createEl('div', {
+        'class': className + '-save',
+        'title': 'Save'
+      }, _svg__WEBPACK_IMPORTED_MODULE_0__["default"].save);
+
+      _this.rowSettings.appendChild(block);
+
+      block.appendChild(close);
+      block.appendChild(save);
+
+      _this.wrapBlock.appendChild(_this.rowSettings);
+
+      on(close, 'click', function () {
+        _this.rowSettings.classList.remove('show');
+      });
+      on(save, 'click', function () {
+        _this.rowSettings.classList.remove('show');
+      });
     }
   }, {
     key: "_createRowMenu",
@@ -281,6 +322,10 @@ function () {
         'left': {
           'menu': this._createEl('ul'),
           'items': {
+            'edit': this._createEl('li', {
+              'title': 'Edit row style',
+              'data-role': 'editRow'
+            }, _svg__WEBPACK_IMPORTED_MODULE_0__["default"].edit),
             'column': this._createEl('li', {
               'title': 'Add column',
               'data-role': 'addCol'
@@ -317,15 +362,13 @@ function () {
       forEachArr(this.rows, function (el) {
         _this5._createRowMenu(el);
 
+        var num = el.dataset.col;
+
         _this5._connectMenuFunc(el);
 
-        var col = el.querySelector('div.' + _this5.className + '-col');
-
-        if (!el.contains(col)) {
-          el.querySelector('div.' + _this5.className + '-content').classList.add(_this5.textareaClass);
+        if (num < 1) {
+          _this5._createCol(el, num);
         }
-
-        addTiny(_this5.textarea);
       });
       on(this.menuItem.add, 'click', function () {
         var row = _this5._createEl('div', {
@@ -337,81 +380,87 @@ function () {
 
         _this5._createRowMenu(row);
 
+        _this5._createCol(row, 1);
+
         _this5.rows = _this5.body.querySelectorAll('div.' + _this5.className + '-row');
 
         _this5._connectMenuFunc(row);
-
-        _this5._createTextarea(row, _this5.className + '-content ' + _this5.textareaClass);
-      });
-    }
-  }, {
-    key: "_createCol",
-    value: function _createCol(el, row) {
-      var _this6 = this;
-
-      var _this = this;
-
-      on(el, 'click', function () {
-        var num = row.dataset.col;
-
-        if (num < 6) {
-          var col = _this6._createEl('div', {
-            'class': _this6.className + '-col'
-          });
-
-          var del = _this6._createEl('div', {
-            'class': _this6.className + '-col-del'
-          }, _svg__WEBPACK_IMPORTED_MODULE_0__["default"].delete);
-
-          var edit = _this6._createEl('div', {
-            'class': _this6.className + '-col-edit'
-          }, _svg__WEBPACK_IMPORTED_MODULE_0__["default"].edit);
-
-          var content = _this6._createEl('div', {
-            'class': _this6.className + '-content'
-          });
-
-          col.appendChild(del);
-          col.appendChild(edit);
-          row.appendChild(col);
-          row.dataset.col = row.querySelectorAll('.' + _this6.className + '-col').length;
-
-          if (num === '0') {
-            content = row.querySelector(_this.textarea);
-            tinymce.remove('div#' + content.id);
-            content.classList.remove(_this.textareaClass);
-            col.appendChild(content);
-            el.click();
-          } else {
-            col.appendChild(content);
-          }
-
-          _this6._removeCol(del, col);
-
-          _this6._editContent(edit, col);
-        }
       });
     }
   }, {
     key: "_connectMenuFunc",
     value: function _connectMenuFunc(row) {
-      var _this7 = this;
+      var _this6 = this;
 
       forEachArr(row.querySelectorAll('div.' + this.className + '-row-menu li'), function (el) {
         if (el.dataset.role === 'delRow') {
-          _this7._removeRow(el, row);
+          _this6._removeRow(el, row);
         } else if (el.dataset.role === 'addCol') {
-          _this7._createCol(el, row);
+          _this6._addCol(el, row);
+        } else if (el.dataset.role === 'editRow') {
+          _this6._showSetting(el, row);
+        }
+      });
+    }
+  }, {
+    key: "_showSetting",
+    value: function _showSetting(el, row) {
+      var _this7 = this;
+
+      var _this = this;
+
+      on(el, 'click', function () {
+        _this7.rowSettings.classList.add('show');
+      });
+    }
+  }, {
+    key: "_createCol",
+    value: function _createCol(row, num) {
+      var col = this._createEl('div', {
+        'class': this.className + '-col'
+      });
+
+      var del = this._createEl('div', {
+        'class': this.className + '-col-del'
+      }, _svg__WEBPACK_IMPORTED_MODULE_0__["default"].delete);
+
+      var edit = this._createEl('div', {
+        'class': this.className + '-col-edit'
+      }, _svg__WEBPACK_IMPORTED_MODULE_0__["default"].edit);
+
+      var content = num < 1 && row.querySelector('div.' + this.className + '-content') ? row.querySelector('div.' + this.className + '-content') : this._createEl('div', {
+        'class': this.className + '-content'
+      });
+      col.appendChild(del);
+      col.appendChild(edit);
+      col.appendChild(content);
+      row.appendChild(col);
+      row.dataset.col = row.querySelectorAll('.' + this.className + '-col').length;
+
+      this._removeCol(del, col);
+
+      this._editContent(edit, col);
+    }
+  }, {
+    key: "_addCol",
+    value: function _addCol(el, row) {
+      var _this8 = this;
+
+      on(el, 'click', function () {
+        var num = row.dataset.col;
+
+        if (num < 6) {
+          _this8._createCol(row, num);
         }
       });
     }
   }, {
     key: "_removeRow",
     value: function _removeRow(el, row) {
-      var _this8 = this;
+      var _this9 = this;
 
       on(el, 'click', function () {
-        forEachArr(row.querySelectorAll(_this8.textarea), function (el) {
+        forEachArr(row.querySelectorAll(_this9.textarea), function (el) {
           tinymce.remove('div#' + el.id);
         });
         row.parentElement.removeChild(row);
@@ -420,39 +469,29 @@ function () {
   }, {
     key: "_removeCol",
     value: function _removeCol(el, column) {
-      var _this = this;
+      var _this10 = this;
 
       on(el, 'click', function () {
         var parent = column.parentElement;
         parent.removeChild(column);
-
-        if (parent.dataset.col === '2') {
-          var col = parent.querySelector('div.' + _this.className + '-col');
-          var content = col.querySelector('div.' + _this.className + '-content');
-          content.classList.add(_this.textareaClass);
-          parent.appendChild(content);
-          parent.removeChild(col);
-          addTiny(_this.textarea);
-        }
-
-        parent.dataset.col = parent.querySelectorAll('.' + this.className).length;
+        parent.dataset.col = parent.querySelectorAll('.' + _this10.className + '-col').length;
       });
     }
   }, {
     key: "_editContent",
     value: function _editContent(el, col) {
-      var _this = this;
+      var _this11 = this;
 
       on(el, 'click', function () {
-        _this.editor.classList.add('show');
+        _this11.editor.classList.add('show');
 
-        var content = col.querySelector('div.' + _this.className + '-content');
+        var content = col.querySelector('div.' + _this11.className + '-content');
 
-        var editor = _this.editor.querySelector('div.' + _this.textareaEditor);
+        var editor = _this11.editor.querySelector('div.' + _this11.textareaEditor);
 
         editor.innerHTML = content.innerHTML;
         content.classList.add('changing');
-        addTiny('div.' + _this.textareaEditor);
+        addTiny('div.' + _this11.textareaEditor);
       });
     }
   }, {
@@ -482,35 +521,36 @@ function () {
   }, {
     key: "getContent",
     value: function getContent() {
-      var _this9 = this;
+      var _this12 = this;
 
       var html = this.body.cloneNode(true);
       var rows = html.querySelectorAll('div.' + this.className + '-row');
       forEachArr(rows, function (row) {
-        var menu = row.querySelector('div.' + _this9.className + '-row-menu');
+        var menu = row.querySelector('div.' + _this12.className + '-row-menu');
         row.removeChild(menu);
-        var cols = row.querySelectorAll('div.' + _this9.className + '-col');
+        var cols = row.querySelectorAll('div.' + _this12.className + '-col');
 
-        if (cols.length > 0) {
+        if (cols.length > 1) {
           forEachArr(cols, function (col) {
-            var del = col.querySelector('div.' + _this9.className + '-col-del');
-            var edit = col.querySelector('div.' + _this9.className + '-col-edit');
-            var content = col.querySelector('div.' + _this9.className + '-content');
+            var del = col.querySelector('div.' + _this12.className + '-col-del');
+            var edit = col.querySelector('div.' + _this12.className + '-col-edit');
+            var content = col.querySelector('div.' + _this12.className + '-content');
             content.removeAttribute('id');
             content.removeAttribute('style');
             content.removeAttribute('aria-hidden');
             col.removeChild(del);
             col.removeChild(edit);
           });
-        } else {
-          var content = row.querySelector('div.' + _this9.className + '-content');
-          var tox = row.querySelector('div.tox');
-          content.innerHTML = tinymce.get(content.id).getContent();
-          content.classList.remove(_this9.textareaClass);
+        } else if (cols.length === 1) {
+          var content = cols[0].querySelector('div.' + _this12.className + '-content');
           content.removeAttribute('id');
           content.removeAttribute('style');
           content.removeAttribute('aria-hidden');
-          row.removeChild(tox);
+          cols[0].parentNode.dataset.col = 0;
+          cols[0].parentNode.insertBefore(content, cols[0]);
+          cols[0].parentNode.removeChild(cols[0]);
+        } else {
+          row.parentNode.removeChild(row);
         }
       });
       return html.innerHTML;
