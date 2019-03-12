@@ -142,7 +142,8 @@ var defaults = {
         }
       });
     }
-  }
+  },
+  bgClasses: 'first, sec, third'
 };
 
 var PageBuilder =
@@ -155,9 +156,7 @@ function () {
 
     this.selector = selector.length > 0 ? selector[0] : selector;
     this.className = 'pgBld';
-    this.textareaClass = this.className + '-textarea';
     this.textareaEditor = this.className + '-editor-textarea';
-    this.textarea = 'div.' + this.textareaClass;
     var customOptions = options || {};
     this.options = {};
     forEachObj(defaults, function (key, value) {
@@ -172,9 +171,9 @@ function () {
 
       this._createInterface();
 
-      this._createMenu();
-
       this._createBody();
+
+      this._createMenu();
 
       this._createEditor();
 
@@ -201,13 +200,13 @@ function () {
     value: function _createMenu() {
       var _this3 = this;
 
-      this.menu = this._createEl('ul', {
+      this.menu = this._createEl('div', {
         'class': this.className + '-menu'
       });
       this.menuItem = {
-        'add': this._createEl('li', {
+        'add': this._createEl('div', {
           'class': this.className + '-menu-item-add'
-        }, "".concat(_svg__WEBPACK_IMPORTED_MODULE_0__["default"].plus, " Add row"))
+        }, _svg__WEBPACK_IMPORTED_MODULE_0__["default"].plus)
       };
       this.wrapBlock.appendChild(this.menu);
       forEachObj(this.menuItem, function (key, value) {
@@ -245,12 +244,15 @@ function () {
         'title': 'Save'
       }, _svg__WEBPACK_IMPORTED_MODULE_0__["default"].save);
 
+      var textarea = this._createEl('div', {
+        'class': _this.textareaEditor
+      });
+
       _this.editor.appendChild(block);
 
       block.appendChild(close);
       block.appendChild(save);
-
-      _this._createTextarea(block, _this.textareaEditor);
+      block.appendChild(textarea);
 
       _this.wrapBlock.appendChild(_this.editor);
 
@@ -263,7 +265,7 @@ function () {
       });
 
       function closeEditor() {
-        var content = _this.wrapBlock.querySelector('.changing');
+        var content = _this.wrapBlock.querySelector('div.' + _this.className + '-content.changing');
 
         _this.editor.classList.remove('show');
 
@@ -296,19 +298,71 @@ function () {
         'title': 'Save'
       }, _svg__WEBPACK_IMPORTED_MODULE_0__["default"].save);
 
+      var bgRow = _this._createEl('div', {
+        'class': className + '-bgRow'
+      });
+
+      var text = _this._createEl('h3', {
+        'class': className + '-h3'
+      }, "Background style <span>clear formatting</span>");
+
+      on(text.lastChild, 'click', function () {
+        removeActive();
+      });
+      forEachArr(_this.options.bgClasses.split(', '), function (el) {
+        var bg = _this._createEl('div', {
+          'class': className + '-bgCol ' + el,
+          'data-class': el
+        });
+
+        bgRow.appendChild(bg);
+        on(bg, 'click', function () {
+          removeActive();
+          bg.classList.add('active');
+        });
+      });
+
       _this.rowSettings.appendChild(block);
 
       block.appendChild(close);
       block.appendChild(save);
+      block.appendChild(text);
+      block.appendChild(bgRow);
 
       _this.wrapBlock.appendChild(_this.rowSettings);
 
       on(close, 'click', function () {
-        _this.rowSettings.classList.remove('show');
+        closeSettings();
+        removeActive();
       });
       on(save, 'click', function () {
-        _this.rowSettings.classList.remove('show');
+        var row = closeSettings();
+        var bg = bgRow.querySelector('div.active');
+
+        if (bg) {
+          row.className = _this.className + '-row ' + bg.dataset.class;
+        } else {
+          row.className = _this.className + '-row';
+        }
+
+        removeActive();
       });
+
+      function closeSettings() {
+        var row = _this.wrapBlock.querySelector('div.' + _this.className + '-row.changing');
+
+        row.classList.remove('changing');
+
+        _this.rowSettings.classList.remove('show');
+
+        return row;
+      }
+
+      function removeActive() {
+        forEachArr(bgRow.querySelectorAll('div.' + className + '-bgCol'), function (el) {
+          el.classList.remove('active');
+        });
+      }
     }
   }, {
     key: "_createRowMenu",
@@ -367,7 +421,11 @@ function () {
         _this5._connectMenuFunc(el);
 
         if (num < 1) {
-          _this5._createCol(el, num);
+          _this5._createCol(el, true);
+        } else {
+          forEachArr(el.querySelectorAll('div.' + _this5.className + '-col'), function (col) {
+            _this5._addColFunc(col);
+          });
         }
       });
       on(this.menuItem.add, 'click', function () {
@@ -380,7 +438,7 @@ function () {
 
         _this5._createRowMenu(row);
 
-        _this5._createCol(row, 1);
+        _this5._createCol(row);
 
         _this5.rows = _this5.body.querySelectorAll('div.' + _this5.className + '-row');
 
@@ -407,19 +465,39 @@ function () {
     value: function _showSetting(el, row) {
       var _this7 = this;
 
-      var _this = this;
-
       on(el, 'click', function () {
+        row.classList.add('changing');
+
         _this7.rowSettings.classList.add('show');
+
+        forEachArr(row.classList, function (el) {
+          if (el !== 'changing' && el !== _this7.className + '-row') {
+            _this7.rowSettings.querySelector('div.' + el).classList.add('active');
+          }
+        });
       });
     }
   }, {
     key: "_createCol",
-    value: function _createCol(row, num) {
+    value: function _createCol(row) {
+      var exists = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
       var col = this._createEl('div', {
         'class': this.className + '-col'
       });
 
+      this._addColFunc(col);
+
+      var content = exists && row.querySelector('div.' + this.className + '-content') ? row.querySelector('div.' + this.className + '-content') : this._createEl('div', {
+        'class': this.className + '-content'
+      });
+      col.appendChild(content);
+      row.appendChild(col);
+      row.dataset.col = row.querySelectorAll('.' + this.className + '-col').length;
+    }
+  }, {
+    key: "_addColFunc",
+    value: function _addColFunc(col) {
       var del = this._createEl('div', {
         'class': this.className + '-col-del'
       }, _svg__WEBPACK_IMPORTED_MODULE_0__["default"].delete);
@@ -428,14 +506,8 @@ function () {
         'class': this.className + '-col-edit'
       }, _svg__WEBPACK_IMPORTED_MODULE_0__["default"].edit);
 
-      var content = num < 1 && row.querySelector('div.' + this.className + '-content') ? row.querySelector('div.' + this.className + '-content') : this._createEl('div', {
-        'class': this.className + '-content'
-      });
       col.appendChild(del);
       col.appendChild(edit);
-      col.appendChild(content);
-      row.appendChild(col);
-      row.dataset.col = row.querySelectorAll('.' + this.className + '-col').length;
 
       this._removeCol(del, col);
 
@@ -450,61 +522,44 @@ function () {
         var num = row.dataset.col;
 
         if (num < 6) {
-          _this8._createCol(row, num);
+          _this8._createCol(row);
         }
       });
     }
   }, {
     key: "_removeRow",
     value: function _removeRow(el, row) {
-      var _this9 = this;
-
       on(el, 'click', function () {
-        forEachArr(row.querySelectorAll(_this9.textarea), function (el) {
-          tinymce.remove('div#' + el.id);
-        });
         row.parentElement.removeChild(row);
       });
     }
   }, {
     key: "_removeCol",
     value: function _removeCol(el, column) {
-      var _this10 = this;
+      var _this9 = this;
 
       on(el, 'click', function () {
         var parent = column.parentElement;
         parent.removeChild(column);
-        parent.dataset.col = parent.querySelectorAll('.' + _this10.className + '-col').length;
+        parent.dataset.col = parent.querySelectorAll('.' + _this9.className + '-col').length;
       });
     }
   }, {
     key: "_editContent",
     value: function _editContent(el, col) {
-      var _this11 = this;
+      var _this10 = this;
 
       on(el, 'click', function () {
-        _this11.editor.classList.add('show');
+        _this10.editor.classList.add('show');
 
-        var content = col.querySelector('div.' + _this11.className + '-content');
+        var content = col.querySelector('div.' + _this10.className + '-content');
 
-        var editor = _this11.editor.querySelector('div.' + _this11.textareaEditor);
+        var editor = _this10.editor.querySelector('div.' + _this10.textareaEditor);
 
         editor.innerHTML = content.innerHTML;
         content.classList.add('changing');
-        addTiny('div.' + _this11.textareaEditor);
+        addTiny('div.' + _this10.textareaEditor);
       });
-    }
-  }, {
-    key: "_createTextarea",
-    value: function _createTextarea(parent) {
-      var className = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.textareaClass;
-
-      var textarea = this._createEl('div', {
-        'class': className
-      });
-
-      parent.appendChild(textarea);
-      addTiny(this.textarea);
     }
   }, {
     key: "_createEl",
@@ -521,20 +576,20 @@ function () {
   }, {
     key: "getContent",
     value: function getContent() {
-      var _this12 = this;
+      var _this11 = this;
 
       var html = this.body.cloneNode(true);
       var rows = html.querySelectorAll('div.' + this.className + '-row');
       forEachArr(rows, function (row) {
-        var menu = row.querySelector('div.' + _this12.className + '-row-menu');
+        var menu = row.querySelector('div.' + _this11.className + '-row-menu');
         row.removeChild(menu);
-        var cols = row.querySelectorAll('div.' + _this12.className + '-col');
+        var cols = row.querySelectorAll('div.' + _this11.className + '-col');
 
         if (cols.length > 1) {
           forEachArr(cols, function (col) {
-            var del = col.querySelector('div.' + _this12.className + '-col-del');
-            var edit = col.querySelector('div.' + _this12.className + '-col-edit');
-            var content = col.querySelector('div.' + _this12.className + '-content');
+            var del = col.querySelector('div.' + _this11.className + '-col-del');
+            var edit = col.querySelector('div.' + _this11.className + '-col-edit');
+            var content = col.querySelector('div.' + _this11.className + '-content');
             content.removeAttribute('id');
             content.removeAttribute('style');
             content.removeAttribute('aria-hidden');
@@ -542,7 +597,7 @@ function () {
             col.removeChild(edit);
           });
         } else if (cols.length === 1) {
-          var content = cols[0].querySelector('div.' + _this12.className + '-content');
+          var content = cols[0].querySelector('div.' + _this11.className + '-content');
           content.removeAttribute('id');
           content.removeAttribute('style');
           content.removeAttribute('aria-hidden');

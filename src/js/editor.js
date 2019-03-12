@@ -36,16 +36,15 @@ let defaults = {
         }
       })
     }
-  }
+  },
+  bgClasses: 'first, sec, third'
 }
 
 class PageBuilder {
   constructor (selector, options) {
     this.selector = selector.length > 0 ? selector[0] : selector
     this.className = 'pgBld'
-    this.textareaClass = this.className + '-textarea'
     this.textareaEditor = this.className + '-editor-textarea'
-    this.textarea = 'div.' + this.textareaClass
 
     let customOptions = options || {}
     this.options = {}
@@ -57,8 +56,8 @@ class PageBuilder {
   _init () {
     this._changeSelector()
     this._createInterface()
-    this._createMenu()
     this._createBody()
+    this._createMenu()
     this._createEditor()
     this._createRowSettings()
     this._createRow()
@@ -77,14 +76,14 @@ class PageBuilder {
   }
 
   _createMenu () {
-    this.menu = this._createEl('ul', {
+    this.menu = this._createEl('div', {
       'class': this.className + '-menu'
     })
 
     this.menuItem = {
-      'add': this._createEl('li', {
+      'add': this._createEl('div', {
         'class': this.className + '-menu-item-add'
-      }, `${svg.plus} Add row`)
+      }, svg.plus)
     }
 
     this.wrapBlock.appendChild(this.menu)
@@ -122,10 +121,12 @@ class PageBuilder {
       'title': 'Save'
     }, svg.save)
 
+    let textarea = this._createEl('div', { 'class': _this.textareaEditor })
+
     _this.editor.appendChild(block)
     block.appendChild(close)
     block.appendChild(save)
-    _this._createTextarea(block, _this.textareaEditor)
+    block.appendChild(textarea)
 
     _this.wrapBlock.appendChild(_this.editor)
 
@@ -140,7 +141,7 @@ class PageBuilder {
     })
 
     function closeEditor () {
-      let content = _this.wrapBlock.querySelector('.changing')
+      let content = _this.wrapBlock.querySelector('div.' + _this.className + '-content.changing')
       _this.editor.classList.remove('show')
       tinymce.remove('div#' + block.querySelector('div.' + _this.textareaEditor).id)
       content.classList.remove('changing')
@@ -169,18 +170,69 @@ class PageBuilder {
       'title': 'Save'
     }, svg.save)
 
+    let bgRow = _this._createEl('div', {
+      'class': className + '-bgRow'
+    })
+
+    let text = _this._createEl('h3', {
+      'class': className + '-h3'
+    }, `Background style <span>clear formatting</span>`)
+
+    on(text.lastChild, 'click', function () {
+      removeActive()
+    })
+
+    forEachArr(_this.options.bgClasses.split(', '), (el) => {
+      let bg = _this._createEl('div', {
+        'class': className + '-bgCol ' + el,
+        'data-class': el
+      })
+      bgRow.appendChild(bg)
+
+      on(bg, 'click', function () {
+        removeActive()
+        bg.classList.add('active')
+      })
+    })
+
     _this.rowSettings.appendChild(block)
     block.appendChild(close)
     block.appendChild(save)
+    block.appendChild(text)
+    block.appendChild(bgRow)
     _this.wrapBlock.appendChild(_this.rowSettings)
 
     on(close, 'click', function () {
-      _this.rowSettings.classList.remove('show')
+      closeSettings()
+      removeActive()
     })
 
     on(save, 'click', function () {
-      _this.rowSettings.classList.remove('show')
+      let row = closeSettings()
+      let bg = bgRow.querySelector('div.active')
+
+      if (bg) {
+        row.className = _this.className + '-row ' + bg.dataset.class
+      } else {
+        row.className = _this.className + '-row'
+      }
+
+      removeActive()
     })
+
+    function closeSettings () {
+      let row = _this.wrapBlock.querySelector('div.' + _this.className + '-row.changing')
+      row.classList.remove('changing')
+      _this.rowSettings.classList.remove('show')
+
+      return row
+    }
+
+    function removeActive () {
+      forEachArr(bgRow.querySelectorAll('div.' + className + '-bgCol'), (el) => {
+        el.classList.remove('active')
+      })
+    }
   }
 
   _createRowMenu (row) {
@@ -236,7 +288,11 @@ class PageBuilder {
       this._connectMenuFunc(el)
 
       if (num < 1) {
-        this._createCol(el, num)
+        this._createCol(el, true)
+      } else {
+        forEachArr(el.querySelectorAll('div.' + this.className + '-col'), (col) => {
+          this._addColFunc(col)
+        })
       }
     })
 
@@ -248,7 +304,7 @@ class PageBuilder {
 
       this.body.appendChild(row)
       this._createRowMenu(row)
-      this._createCol(row, 1)
+      this._createCol(row)
       this.rows = this.body.querySelectorAll('div.' + this.className + '-row')
       this._connectMenuFunc(row)
     })
@@ -267,24 +323,36 @@ class PageBuilder {
   }
 
   _showSetting (el, row) {
-    let _this = this
-
     on(el, 'click', () => {
+      row.classList.add('changing')
       this.rowSettings.classList.add('show')
+
+      forEachArr(row.classList, (el) => {
+        if (el !== 'changing' && el !== this.className + '-row') {
+          this.rowSettings.querySelector('div.' + el).classList.add('active')
+        }
+      })
     })
   }
 
-  _createCol (row, num) {
+  _createCol (row, exists = false) {
     let col = this._createEl('div', { 'class': this.className + '-col' })
-    let del = this._createEl('div', { 'class': this.className + '-col-del' }, svg.delete)
-    let edit = this._createEl('div', { 'class': this.className + '-col-edit' }, svg.edit)
 
-    let content = num < 1 && row.querySelector('div.' + this.className + '-content') ? row.querySelector('div.' + this.className + '-content') : this._createEl('div', { 'class': this.className + '-content' })
-    col.appendChild(del)
-    col.appendChild(edit)
+    this._addColFunc(col)
+
+    let content = exists && row.querySelector('div.' + this.className + '-content') ? row.querySelector('div.' + this.className + '-content') : this._createEl('div', { 'class': this.className + '-content' })
+
     col.appendChild(content)
     row.appendChild(col)
     row.dataset.col = row.querySelectorAll('.' + this.className + '-col').length
+  }
+
+  _addColFunc (col) {
+    let del = this._createEl('div', { 'class': this.className + '-col-del' }, svg.delete)
+    let edit = this._createEl('div', { 'class': this.className + '-col-edit' }, svg.edit)
+
+    col.appendChild(del)
+    col.appendChild(edit)
 
     this._removeCol(del, col)
     this._editContent(edit, col)
@@ -295,17 +363,13 @@ class PageBuilder {
       let num = row.dataset.col
 
       if (num < 6) {
-        this._createCol(row, num)
+        this._createCol(row)
       }
     })
   }
 
   _removeRow (el, row) {
     on(el, 'click', () => {
-      forEachArr(row.querySelectorAll(this.textarea), (el) => {
-        tinymce.remove('div#' + el.id)
-      })
-
       row.parentElement.removeChild(row)
     })
   }
@@ -327,12 +391,6 @@ class PageBuilder {
       content.classList.add('changing')
       addTiny('div.' + this.textareaEditor)
     })
-  }
-
-  _createTextarea (parent, className = this.textareaClass) {
-    let textarea = this._createEl('div', { 'class': className })
-    parent.appendChild(textarea)
-    addTiny(this.textarea)
   }
 
   _createEl (el, options = {}, inner = '') {
