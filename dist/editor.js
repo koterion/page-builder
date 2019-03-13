@@ -105,22 +105,29 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 
+var id = 0;
+window.pageBuilder = {
+  editors: {},
+  create: function create(selector, options) {
+    try {
+      checkSelector(selector);
+    } catch (e) {
+      console.error(e.message);
+      return false;
+    }
 
-window.pageBuilder = function (selector, options) {
-  try {
-    checkSelector(selector);
-  } catch (e) {
-    console.error(e.message);
-    return false;
+    var list = new PageBuilder(selector, options);
+
+    list._init();
+
+    id += id;
+    this.editors[list.className + '_' + id] = list;
+    return list;
+  },
+  getContent: function getContent(id) {
+    return this.editors[id]._getContent();
   }
-
-  var list = new PageBuilder(selector, options);
-
-  list._init();
-
-  return list;
 };
-
 var defaults = {
   tinymce: {
     settings: function settings(className) {
@@ -191,6 +198,7 @@ function () {
     key: "_createInterface",
     value: function _createInterface() {
       this.wrapBlock = this._createEl('div', {
+        'id': this.className + '_' + id,
         'class': this.className
       });
       this.selector.parentNode.insertBefore(this.wrapBlock, this.selector);
@@ -306,6 +314,10 @@ function () {
         'class': className + '-h3'
       }, "Background style <span>clear formatting</span>");
 
+      var column = _this._createEl('h3', {
+        'class': className + '-h3'
+      }, "Number of columns (1-6): <input type=\"text\">");
+
       on(text.lastChild, 'click', function () {
         removeActive();
       });
@@ -328,9 +340,23 @@ function () {
       block.appendChild(save);
       block.appendChild(text);
       block.appendChild(bgRow);
+      block.appendChild(column);
 
       _this.wrapBlock.appendChild(_this.rowSettings);
 
+      var input = column.querySelector('input');
+      on(input, 'keypress', function (event) {
+        if (!(event.key.search(/[^1-6]/ig) === -1)) {
+          event.preventDefault();
+        } else {
+          this.dataset.change = true;
+
+          if (this.value + '' + event.key > 6) {
+            this.value = event.key;
+            event.preventDefault();
+          }
+        }
+      });
       on(close, 'click', function () {
         closeSettings();
         removeActive();
@@ -343,6 +369,10 @@ function () {
           row.className = _this.className + '-row ' + bg.dataset.class;
         } else {
           row.className = _this.className + '-row';
+        }
+
+        if (input.dataset.change && input.value > 0) {
+          row.dataset.setCol = input.value;
         }
 
         removeActive();
@@ -475,6 +505,7 @@ function () {
             _this7.rowSettings.querySelector('div.' + el).classList.add('active');
           }
         });
+        _this7.rowSettings.querySelector('input').value = row.dataset.setCol ? row.dataset.setCol : row.dataset.col;
       });
     }
   }, {
@@ -493,7 +524,8 @@ function () {
       });
       col.appendChild(content);
       row.appendChild(col);
-      row.dataset.col = row.querySelectorAll('.' + this.className + '-col').length;
+      var num = row.querySelectorAll('.' + this.className + '-col').length;
+      row.dataset.col = num < 7 ? num : 6;
     }
   }, {
     key: "_addColFunc",
@@ -519,11 +551,7 @@ function () {
       var _this8 = this;
 
       on(el, 'click', function () {
-        var num = row.dataset.col;
-
-        if (num < 6) {
-          _this8._createCol(row);
-        }
+        _this8._createCol(row);
       });
     }
   }, {
@@ -541,7 +569,8 @@ function () {
       on(el, 'click', function () {
         var parent = column.parentElement;
         parent.removeChild(column);
-        parent.dataset.col = parent.querySelectorAll('.' + _this9.className + '-col').length;
+        var num = parent.querySelectorAll('.' + _this9.className + '-col').length;
+        parent.dataset.col = num < 7 ? num : 6;
       });
     }
   }, {
@@ -574,8 +603,8 @@ function () {
       return elem;
     }
   }, {
-    key: "getContent",
-    value: function getContent() {
+    key: "_getContent",
+    value: function _getContent() {
       var _this11 = this;
 
       var html = this.body.cloneNode(true);

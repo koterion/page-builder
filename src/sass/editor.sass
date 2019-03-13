@@ -27,17 +27,27 @@
     position: relative
     margin-top: 40px
     display: flex
-    justify-content: space-between
+    flex-wrap: wrap
+    justify-content: space-around
     background: #e2e2e2
     padding: 10px
+
+    &[data-col = '1'],&[data-set-col = '1']
+      > *+*
+        width: 100%
 
     @for $i from 2 through 6
       &[data-col = '#{$i}']
         > *+*
           width: 100%/$i - 1%
 
-    > *, .tox
-      width: 100%
+    @for $i from 2 through 6
+      &[data-set-col = '#{$i}']
+        > *+*
+          width: 100%/$i - 1%
+
+    > *
+      width: 100% / 6 - 1%
 
     &-menu
       position: absolute
@@ -109,6 +119,7 @@
 
   &-col
     position: relative
+    margin-bottom: 10px
 
     &-del, &-edit
       position: absolute

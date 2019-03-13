@@ -1,18 +1,27 @@
 'use strict'
 
 import svg from './svg'
+let id = 0
 
-window.pageBuilder = function (selector, options) {
-  try {
-    checkSelector(selector)
-  } catch (e) {
-    console.error(e.message)
-    return false
+window.pageBuilder = {
+  editors: {},
+  create: function (selector, options) {
+    try {
+      checkSelector(selector)
+    } catch (e) {
+      console.error(e.message)
+      return false
+    }
+
+    let list = new PageBuilder(selector, options)
+    list._init()
+    id += id
+    this.editors[list.className + '_' + id] = list
+    return list
+  },
+  getContent: function (id) {
+    return this.editors[id]._getContent()
   }
-
-  let list = new PageBuilder(selector, options)
-  list._init()
-  return list
 }
 
 let defaults = {
@@ -70,6 +79,7 @@ class PageBuilder {
 
   _createInterface () {
     this.wrapBlock = this._createEl('div', {
+      'id': this.className + '_' + id,
       'class': this.className
     })
     this.selector.parentNode.insertBefore(this.wrapBlock, this.selector)
@@ -178,6 +188,10 @@ class PageBuilder {
       'class': className + '-h3'
     }, `Background style <span>clear formatting</span>`)
 
+    let column = _this._createEl('h3', {
+      'class': className + '-h3'
+    }, `Number of columns (1-6): <input type="text">`)
+
     on(text.lastChild, 'click', function () {
       removeActive()
     })
@@ -200,7 +214,23 @@ class PageBuilder {
     block.appendChild(save)
     block.appendChild(text)
     block.appendChild(bgRow)
+    block.appendChild(column)
     _this.wrapBlock.appendChild(_this.rowSettings)
+
+    let input = column.querySelector('input')
+
+    on(input, 'keypress', function (event) {
+      if (!(event.key.search(/[^1-6]/ig) === -1)) {
+        event.preventDefault()
+      } else {
+        this.dataset.change = true
+
+        if (this.value + '' + event.key > 6) {
+          this.value = event.key
+          event.preventDefault()
+        }
+      }
+    })
 
     on(close, 'click', function () {
       closeSettings()
@@ -215,6 +245,10 @@ class PageBuilder {
         row.className = _this.className + '-row ' + bg.dataset.class
       } else {
         row.className = _this.className + '-row'
+      }
+
+      if (input.dataset.change && input.value > 0) {
+        row.dataset.setCol = input.value
       }
 
       removeActive()
@@ -332,6 +366,8 @@ class PageBuilder {
           this.rowSettings.querySelector('div.' + el).classList.add('active')
         }
       })
+
+      this.rowSettings.querySelector('input').value = row.dataset.setCol ? row.dataset.setCol : row.dataset.col
     })
   }
 
@@ -344,7 +380,8 @@ class PageBuilder {
 
     col.appendChild(content)
     row.appendChild(col)
-    row.dataset.col = row.querySelectorAll('.' + this.className + '-col').length
+    let num = row.querySelectorAll('.' + this.className + '-col').length
+    row.dataset.col = num < 7 ? num : 6
   }
 
   _addColFunc (col) {
@@ -360,11 +397,7 @@ class PageBuilder {
 
   _addCol (el, row) {
     on(el, 'click', () => {
-      let num = row.dataset.col
-
-      if (num < 6) {
-        this._createCol(row)
-      }
+      this._createCol(row)
     })
   }
 
@@ -378,7 +411,8 @@ class PageBuilder {
     on(el, 'click', () => {
       let parent = column.parentElement
       parent.removeChild(column)
-      parent.dataset.col = parent.querySelectorAll('.' + this.className + '-col').length
+      let num = parent.querySelectorAll('.' + this.className + '-col').length
+      parent.dataset.col = num < 7 ? num : 6
     })
   }
 
@@ -404,7 +438,7 @@ class PageBuilder {
     return elem
   }
 
-  getContent () {
+  _getContent () {
     let html = this.body.cloneNode(true)
     let rows = html.querySelectorAll('div.' + this.className + '-row')
 

@@ -627,11 +627,15 @@ textarea,
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: justify;
-      -ms-flex-pack: justify;
-          justify-content: space-between;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
   background: #e2e2e2;
   padding: 10px;
+}
+.pgBld-row[data-col="1"] > * + *, .pgBld-row[data-set-col="1"] > * + * {
+  width: 100%;
 }
 .pgBld-row[data-col="2"] > * + * {
   width: 49%;
@@ -648,8 +652,23 @@ textarea,
 .pgBld-row[data-col="6"] > * + * {
   width: 15.6666666667%;
 }
-.pgBld-row > *, .pgBld-row .tox {
-  width: 100%;
+.pgBld-row[data-set-col="2"] > * + * {
+  width: 49%;
+}
+.pgBld-row[data-set-col="3"] > * + * {
+  width: 32.3333333333%;
+}
+.pgBld-row[data-set-col="4"] > * + * {
+  width: 24%;
+}
+.pgBld-row[data-set-col="5"] > * + * {
+  width: 19%;
+}
+.pgBld-row[data-set-col="6"] > * + * {
+  width: 15.6666666667%;
+}
+.pgBld-row > * {
+  width: 15.6666666667%;
 }
 .pgBld-row-menu {
   position: absolute;
@@ -753,6 +772,7 @@ textarea,
 }
 .pgBld-col {
   position: relative;
+  margin-bottom: 10px;
 }
 .pgBld-col-del, .pgBld-col-edit {
   position: absolute;

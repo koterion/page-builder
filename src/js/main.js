@@ -1,7 +1,7 @@
 import './editor'
 
-let some = pageBuilder(document.querySelector('textarea'))
+pageBuilder.create(document.querySelector('textarea'))
 
 $('.clicker').on('click', function () {
-  console.log(some.getContent())
+  console.log(pageBuilder.getContent('pgBld_0'))
 })
