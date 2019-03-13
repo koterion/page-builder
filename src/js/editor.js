@@ -113,25 +113,25 @@ class PageBuilder {
 
   _createEditor () {
     let _this = this
+    let className = _this.className + '-editor'
     _this.editor = _this._createEl('div', {
-      'class': _this.className + '-editor'
+      'class': className
     })
 
-    let block = _this._createEl('div', {
-      'class': _this.className + '-editor-block'
-    })
-
-    let close = _this._createEl('div', {
-      'class': _this.className + '-editor-close',
-      'title': 'Close'
-    }, svg.close)
-
-    let save = _this._createEl('div', {
-      'class': _this.className + '-editor-save',
-      'title': 'Save'
-    }, svg.save)
-
-    let textarea = this._createEl('div', { 'class': _this.textareaEditor })
+    let [block, close, save, textarea] = [
+      _this._createEl('div', {
+        'class': className + '-block'
+      }),
+      _this._createEl('div', {
+        'class': className + '-close',
+        'title': 'Close'
+      }, svg.close),
+      _this._createEl('div', {
+        'class': className + '-save',
+        'title': 'Save'
+      }, svg.save),
+      _this._createEl('div', { 'class': _this.textareaEditor })
+    ]
 
     _this.editor.appendChild(block)
     block.appendChild(close)
@@ -140,6 +140,8 @@ class PageBuilder {
 
     _this.wrapBlock.appendChild(_this.editor)
 
+    addTiny('div.' + this.textareaEditor)
+
     on(close, 'click', function () {
       closeEditor()
     })
@@ -147,13 +149,12 @@ class PageBuilder {
     on(save, 'click', function () {
       let content = closeEditor()
 
-      content.innerHTML = block.querySelector('div.' + _this.textareaEditor).innerHTML
+      content.innerHTML = tinymce.get(block.querySelector('div.' + _this.textareaEditor).id).getContent()
     })
 
     function closeEditor () {
       let content = _this.wrapBlock.querySelector('div.' + _this.className + '-content.changing')
       _this.editor.classList.remove('show')
-      tinymce.remove('div#' + block.querySelector('div.' + _this.textareaEditor).id)
       content.classList.remove('changing')
       return content
     }
@@ -166,31 +167,28 @@ class PageBuilder {
       'class': className
     })
 
-    let block = _this._createEl('div', {
-      'class': className + '-block'
-    })
-
-    let close = _this._createEl('div', {
-      'class': className + '-close',
-      'title': 'Close'
-    }, svg.close)
-
-    let save = _this._createEl('div', {
-      'class': className + '-save',
-      'title': 'Save'
-    }, svg.save)
-
-    let bgRow = _this._createEl('div', {
-      'class': className + '-bgRow'
-    })
-
-    let text = _this._createEl('h3', {
-      'class': className + '-h3'
-    }, `Background style <span>clear formatting</span>`)
-
-    let column = _this._createEl('h3', {
-      'class': className + '-h3'
-    }, `Number of columns (1-6): <input type="text">`)
+    let [block, close, save, bgRow, text, column] = [
+      _this._createEl('div', {
+        'class': className + '-block'
+      }),
+      _this._createEl('div', {
+        'class': className + '-close',
+        'title': 'Close'
+      }, svg.close),
+      _this._createEl('div', {
+        'class': className + '-save',
+        'title': 'Save'
+      }, svg.save),
+      _this._createEl('div', {
+        'class': className + '-bgRow'
+      }),
+      _this._createEl('h3', {
+        'class': className + '-h3'
+      }, `Background style <span>clear formatting</span>`),
+      _this._createEl('h3', {
+        'class': className + '-h3'
+      }, `Number of columns (1-6): <input type="text">`)
+    ]
 
     on(text.lastChild, 'click', function () {
       removeActive()
@@ -422,8 +420,8 @@ class PageBuilder {
       let content = col.querySelector('div.' + this.className + '-content')
       let editor = this.editor.querySelector('div.' + this.textareaEditor)
       editor.innerHTML = content.innerHTML
+      tinymce.get(editor.id).setContent(content.innerHTML)
       content.classList.add('changing')
-      addTiny('div.' + this.textareaEditor)
     })
   }
 
@@ -461,14 +459,15 @@ class PageBuilder {
           col.removeChild(edit)
         })
       } else if (cols.length === 1) {
-        let content = cols[0].querySelector('div.' + this.className + '-content')
+        cols = cols[0]
+        let content = cols.querySelector('div.' + this.className + '-content')
 
         content.removeAttribute('id')
         content.removeAttribute('style')
         content.removeAttribute('aria-hidden')
-        cols[0].parentNode.dataset.col = 0
-        cols[0].parentNode.insertBefore(content, cols[0])
-        cols[0].parentNode.removeChild(cols[0])
+        cols.parentNode.dataset.col = 0
+        cols.parentNode.insertBefore(content, cols)
+        cols.parentNode.removeChild(cols)
       } else {
         row.parentNode.removeChild(row)
       }

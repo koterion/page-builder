@@ -234,27 +234,25 @@ function () {
     value: function _createEditor() {
       var _this = this;
 
+      var className = _this.className + '-editor';
       _this.editor = _this._createEl('div', {
-        'class': _this.className + '-editor'
+        'class': className
       });
-
-      var block = _this._createEl('div', {
-        'class': _this.className + '-editor-block'
-      });
-
-      var close = _this._createEl('div', {
-        'class': _this.className + '-editor-close',
+      var _ref = [_this._createEl('div', {
+        'class': className + '-block'
+      }), _this._createEl('div', {
+        'class': className + '-close',
         'title': 'Close'
-      }, _svg__WEBPACK_IMPORTED_MODULE_0__["default"].close);
-
-      var save = _this._createEl('div', {
-        'class': _this.className + '-editor-save',
+      }, _svg__WEBPACK_IMPORTED_MODULE_0__["default"].close), _this._createEl('div', {
+        'class': className + '-save',
         'title': 'Save'
-      }, _svg__WEBPACK_IMPORTED_MODULE_0__["default"].save);
-
-      var textarea = this._createEl('div', {
+      }, _svg__WEBPACK_IMPORTED_MODULE_0__["default"].save), _this._createEl('div', {
         'class': _this.textareaEditor
-      });
+      })],
+          block = _ref[0],
+          close = _ref[1],
+          save = _ref[2],
+          textarea = _ref[3];
 
       _this.editor.appendChild(block);
 
@@ -264,12 +262,13 @@ function () {
 
       _this.wrapBlock.appendChild(_this.editor);
 
+      addTiny('div.' + this.textareaEditor);
       on(close, 'click', function () {
         closeEditor();
       });
       on(save, 'click', function () {
         var content = closeEditor();
-        content.innerHTML = block.querySelector('div.' + _this.textareaEditor).innerHTML;
+        content.innerHTML = tinymce.get(block.querySelector('div.' + _this.textareaEditor).id).getContent();
       });
 
       function closeEditor() {
@@ -277,7 +276,6 @@ function () {
 
         _this.editor.classList.remove('show');
 
-        tinymce.remove('div#' + block.querySelector('div.' + _this.textareaEditor).id);
         content.classList.remove('changing');
         return content;
       }
@@ -291,33 +289,27 @@ function () {
       _this.rowSettings = _this._createEl('div', {
         'class': className
       });
-
-      var block = _this._createEl('div', {
+      var _ref2 = [_this._createEl('div', {
         'class': className + '-block'
-      });
-
-      var close = _this._createEl('div', {
+      }), _this._createEl('div', {
         'class': className + '-close',
         'title': 'Close'
-      }, _svg__WEBPACK_IMPORTED_MODULE_0__["default"].close);
-
-      var save = _this._createEl('div', {
+      }, _svg__WEBPACK_IMPORTED_MODULE_0__["default"].close), _this._createEl('div', {
         'class': className + '-save',
         'title': 'Save'
-      }, _svg__WEBPACK_IMPORTED_MODULE_0__["default"].save);
-
-      var bgRow = _this._createEl('div', {
+      }, _svg__WEBPACK_IMPORTED_MODULE_0__["default"].save), _this._createEl('div', {
         'class': className + '-bgRow'
-      });
-
-      var text = _this._createEl('h3', {
+      }), _this._createEl('h3', {
         'class': className + '-h3'
-      }, "Background style <span>clear formatting</span>");
-
-      var column = _this._createEl('h3', {
+      }, "Background style <span>clear formatting</span>"), _this._createEl('h3', {
         'class': className + '-h3'
-      }, "Number of columns (1-6): <input type=\"text\">");
-
+      }, "Number of columns (1-6): <input type=\"text\">")],
+          block = _ref2[0],
+          close = _ref2[1],
+          save = _ref2[2],
+          bgRow = _ref2[3],
+          text = _ref2[4],
+          column = _ref2[5];
       on(text.lastChild, 'click', function () {
         removeActive();
       });
@@ -586,8 +578,8 @@ function () {
         var editor = _this10.editor.querySelector('div.' + _this10.textareaEditor);
 
         editor.innerHTML = content.innerHTML;
+        tinymce.get(editor.id).setContent(content.innerHTML);
         content.classList.add('changing');
-        addTiny('div.' + _this10.textareaEditor);
       });
     }
   }, {
@@ -626,13 +618,14 @@ function () {
             col.removeChild(edit);
           });
         } else if (cols.length === 1) {
-          var content = cols[0].querySelector('div.' + _this11.className + '-content');
+          cols = cols[0];
+          var content = cols.querySelector('div.' + _this11.className + '-content');
           content.removeAttribute('id');
           content.removeAttribute('style');
           content.removeAttribute('aria-hidden');
-          cols[0].parentNode.dataset.col = 0;
-          cols[0].parentNode.insertBefore(content, cols[0]);
-          cols[0].parentNode.removeChild(cols[0]);
+          cols.parentNode.dataset.col = 0;
+          cols.parentNode.insertBefore(content, cols);
+          cols.parentNode.removeChild(cols);
         } else {
           row.parentNode.removeChild(row);
         }
