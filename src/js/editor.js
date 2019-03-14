@@ -1,6 +1,7 @@
 'use strict'
 
 import svg from './svg'
+
 let id = 0
 
 window.pageBuilder = {
@@ -15,8 +16,8 @@ window.pageBuilder = {
 
     let list = new PageBuilder(selector, options)
     list._init()
-    id += id
     this.editors[list.className + '_' + id] = list
+    id += id
     return list
   },
   getContent: function (id) {
@@ -44,6 +45,12 @@ let defaults = {
           })
         }
       })
+    },
+    setContent: (editor, content) => {
+      tinymce.get(editor.id).setContent(content)
+    },
+    getContent: (editor) => {
+      tinymce.get(editor.id).getContent()
     }
   },
   bgClasses: 'first, sec, third'
@@ -134,22 +141,21 @@ class PageBuilder {
     ]
 
     _this.editor.appendChild(block)
-    block.appendChild(close)
-    block.appendChild(save)
-    block.appendChild(textarea)
-
+    forEachArr([close, save, textarea], (el) => {
+      block.appendChild(el)
+    })
     _this.wrapBlock.appendChild(_this.editor)
 
     addTiny('div.' + this.textareaEditor)
 
-    on(close, 'click', function () {
+    on(close, 'click', () => {
       closeEditor()
     })
 
-    on(save, 'click', function () {
+    on(save, 'click', () => {
       let content = closeEditor()
 
-      content.innerHTML = tinymce.get(block.querySelector('div.' + _this.textareaEditor).id).getContent()
+      content.innerHTML = _this.options.tinymce.get(block.querySelector('div.' + _this.textareaEditor).id)
     })
 
     function closeEditor () {
@@ -208,11 +214,9 @@ class PageBuilder {
     })
 
     _this.rowSettings.appendChild(block)
-    block.appendChild(close)
-    block.appendChild(save)
-    block.appendChild(text)
-    block.appendChild(bgRow)
-    block.appendChild(column)
+    forEachArr([close, save, text, bgRow, column], (el) => {
+      block.appendChild(el)
+    })
     _this.wrapBlock.appendChild(_this.rowSettings)
 
     let input = column.querySelector('input')
@@ -239,11 +243,9 @@ class PageBuilder {
       let row = closeSettings()
       let bg = bgRow.querySelector('div.active')
 
-      if (bg) {
-        row.className = _this.className + '-row ' + bg.dataset.class
-      } else {
-        row.className = _this.className + '-row'
-      }
+      row.className = _this.className + '-row'
+
+      if (bg) row.classList.add(bg.dataset.class)
 
       if (input.dataset.change && input.value > 0) {
         row.dataset.setCol = input.value
@@ -420,7 +422,7 @@ class PageBuilder {
       let content = col.querySelector('div.' + this.className + '-content')
       let editor = this.editor.querySelector('div.' + this.textareaEditor)
       editor.innerHTML = content.innerHTML
-      tinymce.get(editor.id).setContent(content.innerHTML)
+      this.options.tinymce.setContent(editor, content.innerHTML)
       content.classList.add('changing')
     })
   }
@@ -482,6 +484,10 @@ function addTiny (className) {
 }
 
 function checkSelector (selector) {
+  if (typeof tinymce === 'undefined') {
+    throw Error(`PageBuilder: Didn't find tinymce. Please connect tinymce.`)
+  }
+
   if (selector === undefined || selector.length === 0) {
     throw Error(`PageBuilder: Didn't find selector`)
   } else if (selector.length > 1) {
@@ -509,21 +515,5 @@ function on (elem, event, func) {
     elem.addEventListener(event, func)
   } else {
     elem.attachEvent('on' + event, func)
-  }
-}
-
-// For IE function closest https://developer.mozilla.org/en-US/docs/Web/API/Element/closest
-
-if (window.Element && !Element.prototype.closest) {
-  Element.prototype.closest = function (s) {
-    let matches = (this.document || this.ownerDocument).querySelectorAll(s)
-    let i
-    let el = this
-    do {
-      i = matches.length
-      while (--i >= 0 && matches.item(i) !== el) {
-      }
-    } while ((i < 0) && (el = el.parentElement))
-    return el
   }
 }

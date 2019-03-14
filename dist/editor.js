@@ -120,8 +120,8 @@ window.pageBuilder = {
 
     list._init();
 
-    id += id;
     this.editors[list.className + '_' + id] = list;
+    id += id;
     return list;
   },
   getContent: function getContent(id) {
@@ -148,6 +148,12 @@ var defaults = {
           });
         }
       });
+    },
+    setContent: function setContent(editor, content) {
+      tinymce.get(editor.id).setContent(content);
+    },
+    getContent: function getContent(editor) {
+      tinymce.get(editor.id).getContent();
     }
   },
   bgClasses: 'first, sec, third'
@@ -256,9 +262,9 @@ function () {
 
       _this.editor.appendChild(block);
 
-      block.appendChild(close);
-      block.appendChild(save);
-      block.appendChild(textarea);
+      forEachArr([close, save, textarea], function (el) {
+        block.appendChild(el);
+      });
 
       _this.wrapBlock.appendChild(_this.editor);
 
@@ -268,7 +274,7 @@ function () {
       });
       on(save, 'click', function () {
         var content = closeEditor();
-        content.innerHTML = tinymce.get(block.querySelector('div.' + _this.textareaEditor).id).getContent();
+        content.innerHTML = _this.options.tinymce.get(block.querySelector('div.' + _this.textareaEditor).id);
       });
 
       function closeEditor() {
@@ -328,11 +334,9 @@ function () {
 
       _this.rowSettings.appendChild(block);
 
-      block.appendChild(close);
-      block.appendChild(save);
-      block.appendChild(text);
-      block.appendChild(bgRow);
-      block.appendChild(column);
+      forEachArr([close, save, text, bgRow, column], function (el) {
+        block.appendChild(el);
+      });
 
       _this.wrapBlock.appendChild(_this.rowSettings);
 
@@ -356,12 +360,8 @@ function () {
       on(save, 'click', function () {
         var row = closeSettings();
         var bg = bgRow.querySelector('div.active');
-
-        if (bg) {
-          row.className = _this.className + '-row ' + bg.dataset.class;
-        } else {
-          row.className = _this.className + '-row';
-        }
+        row.className = _this.className + '-row';
+        if (bg) row.classList.add(bg.dataset.class);
 
         if (input.dataset.change && input.value > 0) {
           row.dataset.setCol = input.value;
@@ -578,7 +578,9 @@ function () {
         var editor = _this10.editor.querySelector('div.' + _this10.textareaEditor);
 
         editor.innerHTML = content.innerHTML;
-        tinymce.get(editor.id).setContent(content.innerHTML);
+
+        _this10.options.tinymce.setContent(editor, content.innerHTML);
+
         content.classList.add('changing');
       });
     }
@@ -642,6 +644,10 @@ function addTiny(className) {
 }
 
 function checkSelector(selector) {
+  if (typeof tinymce === 'undefined') {
+    throw Error("PageBuilder: Didn't find tinymce. Please connect tinymce.");
+  }
+
   if (selector === undefined || selector.length === 0) {
     throw Error("PageBuilder: Didn't find selector");
   } else if (selector.length > 1) {
@@ -669,23 +675,6 @@ function on(elem, event, func) {
   } else {
     elem.attachEvent('on' + event, func);
   }
-} // For IE function closest https://developer.mozilla.org/en-US/docs/Web/API/Element/closest
-
-
-if (window.Element && !Element.prototype.closest) {
-  Element.prototype.closest = function (s) {
-    var matches = (this.document || this.ownerDocument).querySelectorAll(s);
-    var i;
-    var el = this;
-
-    do {
-      i = matches.length;
-
-      while (--i >= 0 && matches.item(i) !== el) {}
-    } while (i < 0 && (el = el.parentElement));
-
-    return el;
-  };
 }
 
 /***/ }),
