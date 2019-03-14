@@ -1,10 +1,9 @@
 'use strict'
 
 import svg from './svg'
-
 let id = 0
 
-window.pageBuilder = {
+let pageBuilder = {
   editors: {},
   create: function (selector, options) {
     try {
@@ -50,7 +49,7 @@ let defaults = {
       tinymce.get(editor.id).setContent(content)
     },
     getContent: (editor) => {
-      tinymce.get(editor.id).getContent()
+      return tinymce.get(editor.id).getContent()
     }
   },
   bgClasses: 'first, sec, third'
@@ -155,7 +154,7 @@ class PageBuilder {
     on(save, 'click', () => {
       let content = closeEditor()
 
-      content.innerHTML = _this.options.tinymce.get(block.querySelector('div.' + _this.textareaEditor).id)
+      content.innerHTML = _this.options.tinymce.getContent(block.querySelector('div.' + _this.textareaEditor))
     })
 
     function closeEditor () {
@@ -516,4 +515,10 @@ function on (elem, event, func) {
   } else {
     elem.attachEvent('on' + event, func)
   }
+}
+
+if (typeof window === 'undefined') {
+  global.pageBuilder = pageBuilder
+} else {
+  window.pageBuilder = pageBuilder
 }

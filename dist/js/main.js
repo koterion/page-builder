@@ -86,16 +86,65 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/js/editor.js":
-/*!**************************!*\
-  !*** ./src/js/editor.js ***!
-  \**************************/
+/***/ "./node_modules/webpack/buildin/global.js":
+/*!***********************************!*\
+  !*** (webpack)/buildin/global.js ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || new Function("return this")();
+} catch (e) {
+	// This works if the window reference is available
+	if (typeof window === "object") g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+
+/***/ "./src/js/main.js":
+/*!************************!*\
+  !*** ./src/js/main.js ***!
+  \************************/
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _svg__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./svg */ "./src/js/svg.js");
+/* harmony import */ var _pageBuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./pageBuilder */ "./src/js/pageBuilder.js");
+
+pageBuilder.create(document.querySelector('textarea'));
+$('.clicker').on('click', function () {
+  console.log(pageBuilder.getContent('pgBld_0'));
+});
+
+/***/ }),
+
+/***/ "./src/js/pageBuilder.js":
+/*!*******************************!*\
+  !*** ./src/js/pageBuilder.js ***!
+  \*******************************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* WEBPACK VAR INJECTION */(function(global) {/* harmony import */ var _svg__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./svg */ "./src/js/svg.js");
 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -106,7 +155,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 var id = 0;
-window.pageBuilder = {
+var pageBuilder = {
   editors: {},
   create: function create(selector, options) {
     try {
@@ -153,7 +202,7 @@ var defaults = {
       tinymce.get(editor.id).setContent(content);
     },
     getContent: function getContent(editor) {
-      tinymce.get(editor.id).getContent();
+      return tinymce.get(editor.id).getContent();
     }
   },
   bgClasses: 'first, sec, third'
@@ -274,7 +323,7 @@ function () {
       });
       on(save, 'click', function () {
         var content = closeEditor();
-        content.innerHTML = _this.options.tinymce.get(block.querySelector('div.' + _this.textareaEditor).id);
+        content.innerHTML = _this.options.tinymce.getContent(block.querySelector('div.' + _this.textareaEditor));
       });
 
       function closeEditor() {
@@ -677,23 +726,12 @@ function on(elem, event, func) {
   }
 }
 
-/***/ }),
-
-/***/ "./src/js/main.js":
-/*!************************!*\
-  !*** ./src/js/main.js ***!
-  \************************/
-/*! no exports provided */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _editor__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./editor */ "./src/js/editor.js");
-
-pageBuilder.create(document.querySelector('textarea'));
-$('.clicker').on('click', function () {
-  console.log(pageBuilder.getContent('pgBld_0'));
-});
+if (typeof window === 'undefined') {
+  global.pageBuilder = pageBuilder;
+} else {
+  window.pageBuilder = pageBuilder;
+}
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../node_modules/webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
 
 /***/ }),
 

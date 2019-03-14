@@ -30,10 +30,11 @@
   "files": [
     "dist"
   ],
-  "main": "dist/page-builder.js",
+  "style": "dist/css/pageBuilder.css",
+  "main": "dist/pageBuilder.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/koterion/page-builder"
+    "url": "https://github.com/koterion/page_builder"
   },
   "author": "koterion",
   "license": "MIT",

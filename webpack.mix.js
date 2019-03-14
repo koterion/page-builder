@@ -2,9 +2,9 @@ const mix = require('laravel-mix')
 const autoprefixer = require('autoprefixer')
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin')
 
-mix.js('src/js/editor.js', 'dist')
+mix.js('src/js/pageBuilder.js', 'dist')
   .js('src/js/main.js', 'dist/js')
-  .sass('src/sass/editor.sass', 'dist/css')
+  .sass('src/sass/pageBuilder.sass', 'dist/css')
 
   .webpackConfig({
     plugins: [
