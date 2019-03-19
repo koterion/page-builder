@@ -17,13 +17,13 @@ Include [TinyMCE](https://www.tiny.cloud/docs/quick-start/#step1includethetinymc
 
 ### css
 ```css
-@import url('~@koterion/page_builder/dist/css/pageBuilder.css')
+@import url('~@koterion/page_builder/dist/css/pageBuilder.css');
 ```
 
 or (if use Postcss)
 
 ```css
-@import url('~@koterion/page_builder')
+@import url('~@koterion/page_builder');
 ```
 
 ### js
