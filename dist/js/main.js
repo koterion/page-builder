@@ -128,7 +128,7 @@ module.exports = g;
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _pageBuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./pageBuilder */ "./src/js/pageBuilder.js");
 
-pageBuilder.create(document.querySelector('textarea'));
+pageBuilder.create(document.querySelector('.textarea'));
 $('.clicker').on('click', function () {
   console.dir(pageBuilder.getContent('pgBld_0'));
 });
@@ -246,7 +246,7 @@ function () {
   }, {
     key: "_changeSelector",
     value: function _changeSelector() {
-      this.value = this.selector.value;
+      this.value = this.selector.value !== undefined ? this.selector.value : this.selector.innerHTML;
       this.selector.style.display = 'none';
     }
   }, {

@@ -593,6 +593,8 @@ textarea,
 .pgBld {
   background-color: #dedcdc;
   padding: 13px;
+  max-height: 500px;
+  overflow: auto;
 }
 .pgBld-body.editing > *:not(.changing) {
   opacity: 0.3;
@@ -936,6 +938,12 @@ textarea,
 .pgBld-editor-save svg, .pgBld-editor-close svg {
   height: 18px;
   fill: black;
+}
+.pgBld-editor-close svg line {
+  fill: none;
+  stroke: #000000;
+  stroke-width: 20;
+  stroke-miterlimit: 10;
 }
 .pgBld-editor-close:hover {
   border-color: #ffb0b0;

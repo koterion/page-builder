@@ -80,7 +80,7 @@ class PageBuilder {
   }
 
   _changeSelector () {
-    this.value = this.selector.value
+    this.value = this.selector.value !== undefined ? this.selector.value : this.selector.innerHTML
     this.selector.style.display = 'none'
   }
 
