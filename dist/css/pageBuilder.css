@@ -590,49 +590,75 @@ textarea,
   display: inherit;
   position: absolute;
 }
+.pgBld {
+  background-color: #dedcdc;
+  padding: 13px;
+}
+.pgBld-body.editing > *:not(.changing) {
+  opacity: 0.3;
+}
 .pgBld-menu {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
 }
 .pgBld-menu-item-add {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
+  outline: none;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  background-color: #bebebe;
-  padding: 15px 10px;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  background-color: #fff;
   cursor: pointer;
-  width: 100%;
-  -webkit-transition: background-color 0.4s;
-  -o-transition: background-color 0.4s;
-  transition: background-color 0.4s;
+  width: auto;
+  margin: 30px auto 17px auto;
+  padding: 7px 9px;
+  -webkit-box-shadow: 0.618px 1.902px 4px 0 rgba(0, 0, 0, 0.16);
+          box-shadow: 0.618px 1.902px 4px 0 rgba(0, 0, 0, 0.16);
+  border-radius: 3px;
+  border: 1px solid transparent;
+  -webkit-transition: border-color 0.4s;
+  -o-transition: border-color 0.4s;
+  transition: border-color 0.4s;
+}
+.pgBld-menu-item-add span {
+  color: #181818;
+  font-size: 16px;
+  margin-left: 9px;
 }
 .pgBld-menu-item-add:hover {
-  background-color: #b6b6b6;
+  border-color: #52d08f;
+}
+.pgBld-menu-item-add:active {
+  border-color: #00a651;
 }
 .pgBld-menu-item-add svg {
-  height: 40px;
-  fill: green;
+  height: 23px;
+  fill: black;
 }
 .pgBld-row {
-  min-height: 200px;
   position: relative;
-  margin-top: 40px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   -ms-flex-wrap: wrap;
       flex-wrap: wrap;
-  -ms-flex-pack: distribute;
-      justify-content: space-around;
-  background: #e2e2e2;
-  padding: 10px;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  background-color: #fff;
+  -webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  transition: all 0.4s;
+  padding: 0 15px;
+}
+.pgBld-row:not(:last-child) {
+  margin-bottom: 30px;
 }
 .pgBld-row[data-col="1"] > * + *, .pgBld-row[data-set-col="1"] > * + * {
   width: 100%;
@@ -670,171 +696,178 @@ textarea,
 .pgBld-row > * {
   width: 15.6666666667%;
 }
+.pgBld-row.changing .pgBld-row-menu-block {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+.pgBld-row.changing .pgBld-row-menu-settings span {
+  text-decoration: underline;
+}
+.pgBld-row.changing[data-action=edit] .pgBld-col {
+  display: none;
+}
+.pgBld-row.changing[data-action=edit] .pgBld-settings {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
 .pgBld-row-menu {
-  position: absolute;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: justify;
-      -ms-flex-pack: justify;
-          justify-content: space-between;
-  top: 0;
-  left: 0;
-  -webkit-transform: translateY(-100%);
-      -ms-transform: translateY(-100%);
-          transform: translateY(-100%);
-  width: 100%;
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  width: calc(100% + 30px);
+  margin: 0 -15px;
+  padding: 10px 15px;
+  background-color: #fff;
+  margin-bottom: 10px;
 }
-.pgBld-row-menu ul {
-  list-style-type: none;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  margin: 0;
-  padding: 0;
+.pgBld-row-menu-block {
+  display: none;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
 }
-.pgBld-row-menu-delete {
-  background: #ff005d;
-  width: 25px;
-  height: 25px;
-  border-radius: 5px 5px 0 0;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+.pgBld-row-menu-settings, .pgBld-row-menu-delete, .pgBld-row-menu-edit, .pgBld-row-menu-column {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
   cursor: pointer;
-  -webkit-transition: opacity 0.4s;
-  -o-transition: opacity 0.4s;
-  transition: opacity 0.4s;
+  outline: none;
+}
+.pgBld-row-menu-settings span, .pgBld-row-menu-delete span, .pgBld-row-menu-edit span, .pgBld-row-menu-column span {
+  color: #181818;
+  font-size: 16px;
+  margin-left: 9px;
+}
+.pgBld-row-menu-settings svg, .pgBld-row-menu-delete svg, .pgBld-row-menu-edit svg, .pgBld-row-menu-column svg {
+  height: 17px;
+  fill: black;
+}
+.pgBld-row-menu-delete, .pgBld-row-menu-edit, .pgBld-row-menu-column {
+  background-color: #fff;
+  border: 1px solid transparent;
+  padding: 7px 9px;
+  -webkit-box-shadow: 0.618px 1.902px 4px 0 rgba(0, 0, 0, 0.16);
+          box-shadow: 0.618px 1.902px 4px 0 rgba(0, 0, 0, 0.16);
+  border-radius: 3px;
+  -webkit-transition: border-color 0.4s;
+  -o-transition: border-color 0.4s;
+  transition: border-color 0.4s;
+  margin-right: 60px;
+}
+.pgBld-row-menu-settings {
+  background-color: transparent;
+  border: none;
+  padding: 8px 0;
+}
+.pgBld-row-menu-settings svg {
+  height: 30px;
+}
+.pgBld-row-menu-settings.active span, .pgBld-row-menu-settings:hover span {
+  text-decoration: underline;
 }
 .pgBld-row-menu-delete:hover {
-  opacity: 0.6;
+  border-color: #ffb0b0;
 }
-.pgBld-row-menu-delete svg {
-  height: 14px;
-  fill: white;
+.pgBld-row-menu-delete:active {
+  border-color: #ff4646;
 }
-.pgBld-row-menu-column {
-  background: #4C6EF5;
-  width: 50px;
-  height: 25px;
-  border-radius: 0 5px 0 0;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  cursor: pointer;
-  -webkit-transition: opacity 0.4s;
-  -o-transition: opacity 0.4s;
-  transition: opacity 0.4s;
+.pgBld-row-menu-column svg line {
+  stroke: #000000;
+  stroke-width: 19;
+  stroke-miterlimit: 10;
 }
 .pgBld-row-menu-column:hover {
-  opacity: 0.6;
+  border-color: #b0ffcc;
 }
-.pgBld-row-menu-column svg {
-  height: 14px;
-  fill: white;
-}
-.pgBld-row-menu-edit {
-  background: grey;
-  width: 50px;
-  height: 25px;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  cursor: pointer;
-  -webkit-transition: opacity 0.4s;
-  -o-transition: opacity 0.4s;
-  transition: opacity 0.4s;
+.pgBld-row-menu-column:active {
+  border-color: #5cfd95;
 }
 .pgBld-row-menu-edit:hover {
-  opacity: 0.6;
+  border-color: #b0e9ff;
 }
-.pgBld-row-menu-edit svg {
-  height: 14px;
-  fill: white;
+.pgBld-row-menu-edit:active {
+  border-color: #56d0fe;
 }
 .pgBld-col {
+  min-height: 190px;
   position: relative;
   margin-bottom: 10px;
+  background-color: #ebebeb;
+  padding-top: 30px;
 }
 .pgBld-col-del, .pgBld-col-edit {
   position: absolute;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  opacity: 0;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
   cursor: pointer;
-  -webkit-transition: opacity 0.4s;
-  -o-transition: opacity 0.4s;
-  transition: opacity 0.4s;
+  -webkit-transition: border-color 0.4s;
+  -o-transition: border-color 0.4s;
+  transition: border-color 0.4s;
+  border: 1px solid transparent;
+  padding: 5px 10px;
+  border-radius: 3px;
+  width: 50px;
+  height: 40px;
+  outline: none;
+  background: none;
+}
+.pgBld-col-del svg, .pgBld-col-edit svg {
+  fill: #000;
+  -webkit-transition: fill 0.4s;
+  -o-transition: fill 0.4s;
+  transition: fill 0.4s;
 }
 .pgBld-col-del {
   top: 0;
   right: 0;
-  background: #ff005d;
-  width: 25px;
-  height: 25px;
-  border-radius: 0 0 0 5px;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
 }
 .pgBld-col-del svg {
-  height: 14px;
-  fill: white;
+  height: 27px;
+}
+.pgBld-col-del:hover {
+  border-color: #f10101;
+}
+.pgBld-col-del:hover svg {
+  fill: #f10101;
 }
 .pgBld-col-edit {
   top: 0;
   left: 0;
-  background: gray;
-  border-radius: 0 0 5px 0;
-  width: 50px;
-  height: 25px;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
 }
 .pgBld-col-edit svg {
-  height: 14px;
-  fill: white;
+  height: 23px;
 }
-.pgBld-col:hover .pgBld-col-del, .pgBld-col:hover .pgBld-col-edit {
-  opacity: 1;
+.pgBld-col-edit:hover {
+  border-color: #00a651;
 }
-.pgBld-col:hover .pgBld-col-del:hover, .pgBld-col:hover .pgBld-col-edit:hover {
-  opacity: 0.6;
+.pgBld-col-edit:hover svg {
+  fill: #00a651;
 }
 .pgBld-col .pgBld-content {
   height: 100%;
 }
 .pgBld-content {
-  background: white;
-  padding: 30px 20px;
+  padding: 10px 15px;
 }
-.pgBld-editor, .pgBld-settings {
+.pgBld-editor {
   position: fixed;
   top: 0;
   left: 0;
@@ -849,96 +882,147 @@ textarea,
       -ms-flex-pack: center;
           justify-content: center;
   min-height: 650px;
-  background: rgba(0, 0, 0, 0.5);
+  background-color: rgba(203, 202, 202, 0.75);
   z-index: 999;
   padding: 30px;
 }
-.pgBld-editor.show, .pgBld-settings.show {
+.pgBld-editor.show {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
 }
-.pgBld-editor-block, .pgBld-settings-block {
+.pgBld-editor-block {
   max-width: 1000px;
   width: 100%;
   position: relative;
 }
-.pgBld-editor-close, .pgBld-settings-close {
-  position: absolute;
-  right: 0;
-  top: 0;
-  -webkit-transform: translateY(-100%);
-      -ms-transform: translateY(-100%);
-          transform: translateY(-100%);
-  background: #ff005d;
-  width: 25px;
-  height: 25px;
-  border-radius: 5px 5px 0 0;
+.pgBld-editor-footer {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  width: 100%;
+  padding: 30px 10px;
+  background-color: #fff;
+}
+.pgBld-editor-save, .pgBld-editor-close {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
   cursor: pointer;
-  -webkit-transition: opacity 0.4s;
-  -o-transition: opacity 0.4s;
-  transition: opacity 0.4s;
+  outline: none;
+  background-color: #fff;
+  border: 1px solid transparent;
+  padding: 7px 9px;
+  -webkit-box-shadow: 0.618px 1.902px 4px 0 rgba(0, 0, 0, 0.16);
+          box-shadow: 0.618px 1.902px 4px 0 rgba(0, 0, 0, 0.16);
+  border-radius: 3px;
+  -webkit-transition: border-color 0.4s;
+  -o-transition: border-color 0.4s;
+  transition: border-color 0.4s;
+  margin: 0 30px;
 }
-.pgBld-editor-close:hover, .pgBld-settings-close:hover {
-  opacity: 0.6;
+.pgBld-editor-save span, .pgBld-editor-close span {
+  color: #181818;
+  font-size: 16px;
+  margin-left: 9px;
 }
-.pgBld-editor-close svg, .pgBld-settings-close svg {
-  height: 16px;
-  fill: white;
+.pgBld-editor-save svg, .pgBld-editor-close svg {
+  height: 18px;
+  fill: black;
 }
-.pgBld-editor-save, .pgBld-settings-save {
-  position: absolute;
-  left: 0;
-  top: 0;
-  -webkit-transform: translateY(-100%);
-      -ms-transform: translateY(-100%);
-          transform: translateY(-100%);
-  background: green;
-  width: 50px;
-  height: 25px;
-  border-radius: 5px 5px 0 0;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  cursor: pointer;
-  -webkit-transition: opacity 0.4s;
-  -o-transition: opacity 0.4s;
-  transition: opacity 0.4s;
+.pgBld-editor-close:hover {
+  border-color: #ffb0b0;
 }
-.pgBld-editor-save:hover, .pgBld-settings-save:hover {
-  opacity: 0.6;
+.pgBld-editor-close:active {
+  border-color: #ff4646;
 }
-.pgBld-editor-save svg, .pgBld-settings-save svg {
-  height: 16px;
-  fill: white;
+.pgBld-editor-save:hover {
+  border-color: #b0ffcc;
 }
-.pgBld-editor .tox, .pgBld-settings .tox {
+.pgBld-editor-save:active {
+  border-color: #5cfd95;
+}
+.pgBld-editor .tox {
   max-height: 600px;
 }
-.pgBld-settings-block {
+.pgBld-settings {
+  display: none;
   min-height: 200px;
-  background: white;
-  padding: 30px 20px;
+  background-color: #fff;
+  width: calc(100% + 30px) !important;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  margin: 0 -15px;
+  padding-bottom: 20px;
+}
+.pgBld-settings-bgRow, .pgBld-settings-column, .pgBld-settings-footer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+}
+.pgBld-settings-footer {
+  width: 100%;
+  margin-top: 30px;
+}
+.pgBld-settings-column div[data-col] {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  cursor: pointer;
+  border: 2px solid transparent;
+  padding: 3px 5px;
+}
+.pgBld-settings-column div[data-col].active {
+  border-color: black;
+}
+.pgBld-settings-column div[data-col] svg {
+  height: 32px;
+}
+.pgBld-settings-column div[data-col] svg g:nth-child(2) rect {
+  fill: #464647;
+}
+.pgBld-settings-column div[data-col] svg rect {
+  fill: #fff;
+}
+.pgBld-settings-column div[data-col] span {
+  font-size: 16px;
 }
 .pgBld-settings-h3 {
   font-size: 24px;
   font-weight: normal;
   color: #000;
+  text-align: center;
+  width: 100%;
+  margin: 0;
+  margin-bottom: 10px;
 }
 .pgBld-settings-h3 span {
   font-size: 15px;
@@ -951,20 +1035,10 @@ textarea,
 .pgBld-settings-h3 span:hover {
   color: #ff005d;
 }
-.pgBld-settings-bgRow {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-pack: justify;
-      -ms-flex-pack: justify;
-          justify-content: space-between;
-}
 .pgBld-settings-bgCol {
-  -webkit-box-flex: 1;
-      -ms-flex-positive: 1;
-          flex-grow: 1;
   margin: 0 10px;
-  height: 100px;
+  height: 32px;
+  width: 32px;
   cursor: pointer;
   position: relative;
 }
@@ -989,14 +1063,55 @@ textarea,
 .pgBld-settings-bgCol:before {
   content: "";
 }
+.pgBld-settings-save, .pgBld-settings-close {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  cursor: pointer;
+  outline: none;
+  background-color: #fff;
+  border: 1px solid transparent;
+  padding: 7px 9px;
+  -webkit-box-shadow: 0.618px 1.902px 4px 0 rgba(0, 0, 0, 0.16);
+          box-shadow: 0.618px 1.902px 4px 0 rgba(0, 0, 0, 0.16);
+  border-radius: 3px;
+  -webkit-transition: border-color 0.4s;
+  -o-transition: border-color 0.4s;
+  transition: border-color 0.4s;
+  margin: 0 30px;
+}
+.pgBld-settings-save span, .pgBld-settings-close span {
+  color: #181818;
+  font-size: 16px;
+  margin-left: 9px;
+}
+.pgBld-settings-save svg, .pgBld-settings-close svg {
+  height: 18px;
+  fill: black;
+}
+.pgBld-settings-close:hover {
+  border-color: #ffb0b0;
+}
+.pgBld-settings-close:active {
+  border-color: #ff4646;
+}
+.pgBld-settings-save:hover {
+  border-color: #b0ffcc;
+}
+.pgBld-settings-save:active {
+  border-color: #5cfd95;
+}
 .pgBld .first {
-  background: #ff005d;
+  background-color: #ff005d;
 }
 .pgBld .sec {
-  background: aqua;
+  background-color: aqua;
 }
 .pgBld .third {
-  background: #4C6EF5;
+  background-color: #4C6EF5;
 }
 .pgBld .add {
   width: 10px;

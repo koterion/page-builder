@@ -3,5 +3,5 @@ import './pageBuilder'
 pageBuilder.create(document.querySelector('textarea'))
 
 $('.clicker').on('click', function () {
-  console.log(pageBuilder.getContent('pgBld_0'))
+  console.dir(pageBuilder.getContent('pgBld_0'))
 })

@@ -1,36 +1,63 @@
 @import "~sanitize.css"
 
+$gray: #dedcdc
+$gray-light: #ebebeb
+$light: #fff
+
 .pgBld
+  background-color: $gray
+  padding: 13px
+
+  &-body
+    &.editing
+      > *:not(.changing)
+        opacity: .3
+
   &-menu
     display: flex
 
     &-item
       &-add
-        display: flex
+        outline: none
+        display: inline-flex
         align-items: center
-        justify-content: center
-        background-color: #bebebe
-        padding: 15px 10px
+        justify-content: space-between
+        background-color: $light
         cursor: pointer
-        width: 100%
-        transition: background-color .4s
+        width: auto
+        margin: 30px auto 17px auto
+        padding: 7px 9px
+        box-shadow: 0.618px 1.902px 4px 0 rgba(0, 0, 0, 0.16)
+        border-radius: 3px
+        border: 1px solid transparent
+        transition: border-color .4s
+
+        span
+          color: rgb(24, 24, 24)
+          font-size: 16px
+          margin-left: 9px
 
         &:hover
-          background-color: #b6b6b6
+          border-color: #52d08f
+
+        &:active
+          border-color: #00a651
 
         svg
-          height: 40px
-          fill: green
+          height: 23px
+          fill: black
 
   &-row
-    min-height: 200px
     position: relative
-    margin-top: 40px
     display: flex
     flex-wrap: wrap
-    justify-content: space-around
-    background: #e2e2e2
-    padding: 10px
+    justify-content: space-between
+    background-color: $light
+    transition: all .4s
+    padding: 0 15px
+
+    &:not(:last-child)
+      margin-bottom: 30px
 
     &[data-col = '1'],&[data-set-col = '1']
       > *+*
@@ -49,128 +76,159 @@
     > *
       width: 100% / 6 - 1%
 
-    &-menu
-      position: absolute
-      display: flex
-      justify-content: space-between
-      top: 0
-      left: 0
-      transform: translateY(-100%)
-      width: 100%
+    &.changing
+      .pgBld-row-menu
+        &-block
+          display: flex
 
-      ul
-        list-style-type: none
-        display: flex
-        margin: 0
-        padding: 0
+        &-settings
+          span
+            text-decoration: underline
+
+      &[data-action = 'edit']
+        .pgBld-col
+          display: none
+
+        .pgBld-settings
+          display: flex
+
+
+    &-menu
+      display: flex
+      justify-content: flex-end
+      align-items: center
+      width: calc(100% + 30px)
+      margin: 0 -15px
+      padding: 10px 15px
+      background-color: $light
+      margin-bottom: 10px
+
+      &-block
+        display: none
+        align-items: center
+
+      &-settings, &-delete, &-edit, &-column
+        display: inline-flex
+        align-items: center
+        cursor: pointer
+        outline: none
+
+        span
+          color: rgb(24, 24, 24)
+          font-size: 16px
+          margin-left: 9px
+
+        svg
+          height: 17px
+          fill: black
+
+      &-delete, &-edit, &-column
+        background-color: $light
+        border: 1px solid transparent
+        padding: 7px 9px
+        box-shadow: 0.618px 1.902px 4px 0 rgba(0, 0, 0, 0.16)
+        border-radius: 3px
+        transition: border-color .4s
+        margin-right: 60px
+
+      &-settings
+        background-color: transparent
+        border: none
+        padding: 8px 0
+
+        svg
+          height: 30px
+
+        &.active,&:hover
+          span
+            text-decoration: underline
 
       &-delete
-        background: #ff005d
-        width: 25px
-        height: 25px
-        border-radius: 5px 5px 0 0
-        display: flex
-        justify-content: center
-        align-items: center
-        cursor: pointer
-        transition: opacity .4s
-
         &:hover
-          opacity: .6
+          border-color: #ffb0b0
 
-        svg
-          height: 14px
-          fill: white
+        &:active
+          border-color: #ff4646
 
       &-column
-        background: #4C6EF5
-        width: 50px
-        height: 25px
-        border-radius: 0 5px 0 0
-        display: flex
-        justify-content: center
-        align-items: center
-        cursor: pointer
-        transition: opacity .4s
+        svg
+          line
+            stroke: #000000
+            stroke-width: 19
+            stroke-miterlimit: 10
 
         &:hover
-          opacity: .6
+          border-color: #b0ffcc
 
-        svg
-          height: 14px
-          fill: white
+        &:active
+          border-color: #5cfd95
 
       &-edit
-        background: grey
-        width: 50px
-        height: 25px
-        display: flex
-        justify-content: center
-        align-items: center
-        cursor: pointer
-        transition: opacity .4s
-
         &:hover
-          opacity: .6
+          border-color: #b0e9ff
 
-        svg
-          height: 14px
-          fill: white
+        &:active
+          border-color: #56d0fe
 
   &-col
+    min-height: 190px
     position: relative
     margin-bottom: 10px
+    background-color: $gray-light
+    padding-top: 30px
 
     &-del, &-edit
       position: absolute
       display: flex
-      opacity: 0
+      justify-content: center
+      align-items: center
       cursor: pointer
-      transition: opacity .4s
+      transition: border-color .4s
+      border: 1px solid transparent
+      padding: 5px 10px
+      border-radius: 3px
+      width: 50px
+      height: 40px
+      outline: none
+      background: none
+
+      svg
+        fill: #000
+        transition: fill .4s
 
     &-del
       top: 0
       right: 0
-      background: #ff005d
-      width: 25px
-      height: 25px
-      border-radius: 0 0 0 5px
-      justify-content: center
-      align-items: center
 
       svg
-        height: 14px
-        fill: white
+        height: 27px
+
+      &:hover
+        border-color: #f10101
+
+        svg
+          fill: #f10101
 
     &-edit
       top: 0
       left: 0
-      background: rgba(128, 128, 128, 1)
-      border-radius: 0 0 5px 0
-      width: 50px
-      height: 25px
-      justify-content: center
-      align-items: center
 
       svg
-        height: 14px
-        fill: white
+        height: 23px
 
-    &:hover
-      .pgBld-col-del, .pgBld-col-edit
-        opacity: 1
+      &:hover
+        border-color: #00a651
 
-        &:hover
-          opacity: .6
+        svg
+          fill: #00a651
 
     .pgBld-content
       height: 100%
 
   &-content
-    background: white
-    padding: 30px 20px
+    padding: 10px 15px
 
-  &-editor, &-settings
+  &-editor
     position: fixed
     top: 0
     left: 0
@@ -181,7 +239,7 @@
     align-items: center
     justify-content: center
     min-height: 650px
-    background: rgba(0,0,0,.5)
+    background-color: rgba(203,202,202,.75)
     z-index: 999
     padding: 30px
 
@@ -193,63 +251,107 @@
       width: 100%
       position: relative
 
-    &-close
-      position: absolute
-      right: 0
-      top: 0
-      transform: translateY(-100%)
-      background: #ff005d
-      width: 25px
-      height: 25px
-      border-radius: 5px 5px 0 0
+    &-footer
       display: flex
       justify-content: center
+      flex-wrap: wrap
+      width: 100%
+      padding: 30px 10px
+      background-color: $light
+
+    &-save, &-close
+      display: inline-flex
       align-items: center
       cursor: pointer
-      transition: opacity .4s
+      outline: none
+      background-color: $light
+      border: 1px solid transparent
+      padding: 7px 9px
+      box-shadow: 0.618px 1.902px 4px 0 rgba(0, 0, 0, 0.16)
+      border-radius: 3px
+      transition: border-color .4s
+      margin: 0 30px
 
-      &:hover
-        opacity: .6
+      span
+        color: rgb(24, 24, 24)
+        font-size: 16px
+        margin-left: 9px
 
       svg
-        height: 16px
-        fill: white
+        height: 18px
+        fill: black
+
+    &-close
+      &:hover
+        border-color: #ffb0b0
+
+      &:active
+        border-color: #ff4646
 
     &-save
-      position: absolute
-      left: 0
-      top: 0
-      transform: translateY(-100%)
-      background: green
-      width: 50px
-      height: 25px
-      border-radius: 5px 5px 0 0
-      display: flex
-      justify-content: center
-      align-items: center
-      cursor: pointer
-      transition: opacity .4s
-
       &:hover
-        opacity: .6
+        border-color: #b0ffcc
 
-      svg
-        height: 16px
-        fill: white
+      &:active
+        border-color: #5cfd95
 
     .tox
       max-height: 600px
 
   &-settings
-    &-block
-      min-height: 200px
-      background: white
-      padding: 30px 20px
+    display: none
+    min-height: 200px
+    background-color: $light
+    width: calc(100% + 30px) !important
+    justify-content: center
+    flex-wrap: wrap
+    margin: 0 -15px
+    padding-bottom: 20px
+
+    &-bgRow,&-column,&-footer
+      display: flex
+      justify-content: center
+      flex-wrap: wrap
+
+    &-footer
+      width: 100%
+      margin-top: 30px
+
+    &-column
+      div[data-col]
+        display: flex
+        flex-wrap: wrap
+        align-items: center
+        justify-content: center
+        flex-direction: column
+        cursor: pointer
+        border: 2px solid transparent
+        padding: 3px 5px
+
+        &.active
+          border-color: black
+
+        svg
+          height: 32px
+
+          g:nth-child(2)
+            rect
+              fill: #464647
+
+          rect
+            fill: #fff
+
+        span
+          font-size: 16px
 
     &-h3
       font-size: 24px
       font-weight: normal
       color: #000
+      text-align: center
+      width: 100%
+      margin: 0
+      margin-bottom: 10px
 
       span
         font-size: 15px
@@ -260,14 +362,10 @@
         &:hover
           color: #ff005d
 
-    &-bgRow
-      display: flex
-      justify-content: space-between
-
     &-bgCol
-      flex-grow: 1
       margin: 0 10px
-      height: 100px
+      height: 32px
+      width: 32px
       cursor: pointer
       position: relative
 
@@ -291,15 +389,50 @@
       &:before
         content: ''
 
+    &-save, &-close
+      display: inline-flex
+      align-items: center
+      cursor: pointer
+      outline: none
+      background-color: $light
+      border: 1px solid transparent
+      padding: 7px 9px
+      box-shadow: 0.618px 1.902px 4px 0 rgba(0, 0, 0, 0.16)
+      border-radius: 3px
+      transition: border-color .4s
+      margin: 0 30px
+
+      span
+        color: rgb(24, 24, 24)
+        font-size: 16px
+        margin-left: 9px
+
+      svg
+        height: 18px
+        fill: black
+
+    &-close
+      &:hover
+        border-color: #ffb0b0
+
+      &:active
+        border-color: #ff4646
+
+    &-save
+      &:hover
+        border-color: #b0ffcc
+
+      &:active
+        border-color: #5cfd95
 
   .first
-    background: #ff005d
+    background-color: #ff005d
 
   .sec
-    background: aqua
+    background-color: aqua
 
   .third
-    background: #4C6EF5
+    background-color: #4C6EF5
 
   .add
     width: 10px
