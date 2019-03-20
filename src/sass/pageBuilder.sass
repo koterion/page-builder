@@ -56,6 +56,7 @@ $light: #fff
     transition: all .4s
     padding: 0 15px
 
+
     &:not(:last-child)
       margin-bottom: 30px
 
@@ -101,7 +102,6 @@ $light: #fff
       margin: 0 -15px
       padding: 10px 15px
       background-color: $light
-      margin-bottom: 10px
 
       &-block
         display: none
@@ -173,7 +173,7 @@ $light: #fff
   &-col
     min-height: 190px
     position: relative
-    margin-bottom: 10px
+    margin: 10px 0
     background-color: $gray-light
     padding-top: 30px
 
@@ -327,6 +327,7 @@ $light: #fff
         cursor: pointer
         border: 2px solid transparent
         padding: 3px 5px
+        transition: border-color .4s
 
         &.active
           border-color: black
@@ -363,31 +364,36 @@ $light: #fff
           color: #ff005d
 
     &-bgCol
-      margin: 0 10px
-      height: 32px
-      width: 32px
+      margin: 6px 8px
+      height: 35px
+      width: 35px
       cursor: pointer
       position: relative
-
-      &.active
-        &:after
-          opacity: .5
+      background: transparent center center no-repeat
+      background-size: cover
 
       &:after
         content: ''
         display: block
         position: absolute
-        top: 0
-        left: 0
-        width: 100%
-        height: 100%
-        z-index: 999
-        background: rgb(0,0,0)
-        opacity: 0
-        transition: opacity .4s
+        left: -8px
+        top: -6px
+        width: calc(100% + 16px)
+        height: calc(100% + 12px)
+        border: 2px solid transparent
+        transition: border-color .4s
 
-      &:before
-        content: ''
+      &.active
+        &:after
+          border-color: #000
+
+      &.def
+        svg
+          line
+            fill: none
+            stroke: #000000
+            stroke-width: 6
+            stroke-miterlimit: 10
 
     &-save, &-close
       display: inline-flex
@@ -412,6 +418,12 @@ $light: #fff
         fill: black
 
     &-close
+      svg
+        line
+          fill: none
+          stroke: #000000
+          stroke-width: 20
+          stroke-miterlimit: 10
       &:hover
         border-color: #ffb0b0
 

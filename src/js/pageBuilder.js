@@ -201,7 +201,7 @@ class PageBuilder {
       }, `${svg.save} <span>Save changes</span>`),
       _this._createEl('h3', {
         'class': className + '-h3'
-      }, `Background style <span>clear formatting</span>`),
+      }, `Background style`),
       _this._createEl('h3', {
         'class': className + '-h3'
       }, `Number of columns in a row`)
@@ -212,15 +212,14 @@ class PageBuilder {
     footer.appendChild(close)
     footer.appendChild(save)
 
-    on(bgText.lastChild, 'click', () => {
-      removeActive(bgRow.querySelector('.active'))
-    })
-
-    forEachArr(_this.options.bgClasses.split(', '), (el) => {
+    forEachArr(('def, ' + _this.options.bgClasses).split(', '), (el) => {
       let bg = _this._createEl('div', {
         'class': className + '-bgCol ' + el,
         'data-class': el
       })
+
+      if (el === 'def') bg.innerHTML = svg.close
+
       bgRow.appendChild(bg)
 
       on(bg, 'click', function () {
@@ -251,7 +250,12 @@ class PageBuilder {
     row.appendChild(rowSettings)
 
     on(close, 'click', function () {
-      closeSettings()
+      let row = closeSettings()
+      let bgItem = row.querySelector('div.' + className + '-bgCol.active')
+      let colItem = row.querySelector('div[data-col].active')
+
+      if (bgItem) bgItem.classList.remove('active')
+      if (colItem) colItem.classList.remove('active')
     })
 
     on(save, 'click', function () {
@@ -261,13 +265,13 @@ class PageBuilder {
 
       row.className = _this.className + '-row'
 
-      if (bg) row.classList.add(bg.dataset.class)
-
+      if (bg && bg.dataset.class !== 'def') row.classList.add(bg.dataset.class)
       if (col) row.dataset.col = col.dataset.col
     })
 
     function closeSettings () {
       let row = _this.wrapBlock.querySelector('div.' + _this.className + '-row.changing')
+
       row.classList.remove('changing')
       row.removeAttribute('data-action')
       _this.body.classList.remove('editing')
@@ -349,6 +353,7 @@ class PageBuilder {
 
       this.body.appendChild(row)
       this._createRowMenu(row)
+      this._createRowSettings(row)
       this._createCol(row)
       this.rows = this.body.querySelectorAll('div.' + this.className + '-row')
       this._connectMenuFunc(row)
@@ -385,12 +390,22 @@ class PageBuilder {
       row.dataset.action = 'edit'
       let settings = row.querySelector('div.' + this.className + '-settings')
       let col = row.dataset.setCol ? row.dataset.setCol : row.dataset.col
+      let bgCol = false
+
+      forEachArr(settings.querySelectorAll('div.' + this.className + '-settings-bgCol, div[data-col]'), (el) => {
+        el.classList.remove('active')
+      })
 
       forEachArr(row.classList, (el) => {
         if (el !== 'changing' && el !== this.className + '-row') {
           settings.querySelector('div.' + el).classList.add('active')
+          bgCol = true
         }
       })
+
+      if (!bgCol) {
+        settings.querySelector('div.' + this.className + '-settings-bgCol.def').classList.add('active')
+      }
 
       settings.querySelector('div[data-col = "' + col + '"]').classList.add('active')
     })
@@ -460,6 +475,7 @@ class PageBuilder {
         let row = this.body.querySelector('.changing')
         if (!row.contains(event.target)) {
           row.classList.remove('changing')
+          row.removeAttribute('data-action')
           block.classList.remove('editing')
         }
       }
