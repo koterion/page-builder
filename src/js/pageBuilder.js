@@ -53,6 +53,7 @@ let defaults = {
       return tinymce.get(editor.id).getContent()
     }
   },
+  height: '500px',
   bgClasses: 'first, sec, third'
 }
 
@@ -90,6 +91,7 @@ class PageBuilder {
       'class': this.className
     })
     this.selector.parentNode.insertBefore(this.wrapBlock, this.selector)
+    this.wrapBlock.style.height = this.options.height
   }
 
   _createMenu () {
@@ -453,7 +455,12 @@ class PageBuilder {
       let parent = column.parentElement
       parent.removeChild(column)
       let num = parent.querySelectorAll('.' + this.className + '-col').length
-      parent.dataset.col = num < 7 ? num : 6
+
+      if (num >= 1) {
+        parent.dataset.col = num < 7 ? num : 6
+      } else {
+        parent.parentNode.removeChild(parent)
+      }
     })
   }
 

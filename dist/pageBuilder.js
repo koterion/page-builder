@@ -187,6 +187,7 @@ var defaults = {
       return tinymce.get(editor.id).getContent();
     }
   },
+  height: '500px',
   bgClasses: 'first, sec, third'
 };
 
@@ -239,6 +240,7 @@ function () {
         'class': this.className
       });
       this.selector.parentNode.insertBefore(this.wrapBlock, this.selector);
+      this.wrapBlock.style.height = this.options.height;
     }
   }, {
     key: "_createMenu",
@@ -636,7 +638,12 @@ function () {
         var parent = column.parentElement;
         parent.removeChild(column);
         var num = parent.querySelectorAll('.' + _this11.className + '-col').length;
-        parent.dataset.col = num < 7 ? num : 6;
+
+        if (num >= 1) {
+          parent.dataset.col = num < 7 ? num : 6;
+        } else {
+          parent.parentNode.removeChild(parent);
+        }
       });
     }
   }, {

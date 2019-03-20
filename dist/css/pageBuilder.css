@@ -593,7 +593,6 @@ textarea,
 .pgBld {
   background-color: #dedcdc;
   padding: 13px;
-  max-height: 500px;
   overflow: auto;
 }
 .pgBld-body.editing > *:not(.changing) {

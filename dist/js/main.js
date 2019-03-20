@@ -128,7 +128,9 @@ module.exports = g;
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _pageBuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./pageBuilder */ "./src/js/pageBuilder.js");
 
-pageBuilder.create(document.querySelector('.textarea'));
+pageBuilder.create(document.querySelector('.textarea'), {
+  height: 'auto'
+});
 $('.clicker').on('click', function () {
   console.dir(pageBuilder.getContent('pgBld_0'));
 });
@@ -205,6 +207,7 @@ var defaults = {
       return tinymce.get(editor.id).getContent();
     }
   },
+  height: '500px',
   bgClasses: 'first, sec, third'
 };
 
@@ -257,6 +260,7 @@ function () {
         'class': this.className
       });
       this.selector.parentNode.insertBefore(this.wrapBlock, this.selector);
+      this.wrapBlock.style.height = this.options.height;
     }
   }, {
     key: "_createMenu",
@@ -654,7 +658,12 @@ function () {
         var parent = column.parentElement;
         parent.removeChild(column);
         var num = parent.querySelectorAll('.' + _this11.className + '-col').length;
-        parent.dataset.col = num < 7 ? num : 6;
+
+        if (num >= 1) {
+          parent.dataset.col = num < 7 ? num : 6;
+        } else {
+          parent.parentNode.removeChild(parent);
+        }
       });
     }
   }, {
