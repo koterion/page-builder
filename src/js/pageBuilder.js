@@ -3,7 +3,6 @@
 import svg from './svg'
 
 let id = 0
-
 let pageBuilder = {
   editors: {},
   create: function (selector, options) {
