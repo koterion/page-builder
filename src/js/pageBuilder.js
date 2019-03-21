@@ -1,7 +1,5 @@
 'use strict'
 
-import svg from './svg'
-
 let id = 0
 let pageBuilder = {
   editors: {},
@@ -101,7 +99,7 @@ class PageBuilder {
     this.menuItem = {
       'add': this._createEl('button', {
         'class': this.className + '-menu-item-add'
-      }, `${svg.plus} <span>Add block</span>`)
+      }, `<i class="svg"></i> <span>Add block</span>`)
     }
 
     this.wrapBlock.appendChild(this.menu)
@@ -139,11 +137,11 @@ class PageBuilder {
       _this._createEl('button', {
         'class': className + '-close',
         'title': 'Close'
-      }, `${svg.close} <span>Exit (without saving changes)</span>`),
+      }, `<i class="svg"></i> <span>Exit (without saving changes)</span>`),
       _this._createEl('button', {
         'class': className + '-save',
         'title': 'Save'
-      }, `${svg.save} <span>Save changes</span>`),
+      }, `<i class="svg"></i> <span>Save changes</span>`),
       _this._createEl('div', { 'class': _this.textareaEditor })
     ]
 
@@ -195,11 +193,11 @@ class PageBuilder {
       _this._createEl('button', {
         'class': className + '-close',
         'title': 'Close'
-      }, `${svg.close} <span>Exit (without saving changes)</span>`),
+      }, `<i class="svg"></i> <span>Exit (without saving changes)</span>`),
       _this._createEl('button', {
         'class': className + '-save',
         'title': 'Save'
-      }, `${svg.save} <span>Save changes</span>`),
+      }, `<i class="svg"></i> <span>Save changes</span>`),
       _this._createEl('h3', {
         'class': className + '-h3'
       }, `Background style`),
@@ -219,7 +217,7 @@ class PageBuilder {
         'data-class': el
       })
 
-      if (el === 'def') bg.innerHTML = svg.close
+      if (el === 'def') bg.innerHTML = `<i class="svg"></i>`
 
       bgRow.appendChild(bg)
 
@@ -234,10 +232,10 @@ class PageBuilder {
       rowSettings.appendChild(el)
     })
 
-    forEachObj(svg.columns, (key, value) => {
+    for (let i = 1; i <= 6; i++) {
       let col = this._createEl('div', {
-        'data-col': +key + 1
-      }, `${value} <span>${+key + 1}</span>`)
+        'data-col': i
+      }, `<i class="svg"></i> <span>${i}</span>`)
 
       on(col, 'click', () => {
         removeActive(column.querySelector('.active'))
@@ -246,7 +244,7 @@ class PageBuilder {
       })
 
       column.appendChild(col)
-    })
+    }
 
     row.appendChild(rowSettings)
 
@@ -297,7 +295,7 @@ class PageBuilder {
       'class': className + '-settings',
       'title': 'Settings for row',
       'data-role': 'settingRow'
-    }, `${svg.setting} <span>Settings</span>`)
+    }, `<i class="svg"></i> <span>Settings</span>`)
 
     let menu = {
       'block': this._createEl('div', { 'class': className + '-block' }),
@@ -305,15 +303,15 @@ class PageBuilder {
         'edit': this._createEl('button', {
           'title': 'Edit row style',
           'data-role': 'editRow'
-        }, `${svg.edit} <span>Edit</span>`),
+        }, `<i class="svg"></i> <span>Edit</span>`),
         'column': this._createEl('button', {
           'title': 'Add column',
           'data-role': 'addCol'
-        }, `${svg.column} <span>Add column</span>`),
+        }, `<i class="svg"></i> <span>Add column</span>`),
         'delete': this._createEl('button', {
           'title': 'Remove this row',
           'data-role': 'delRow'
-        }, `${svg.delete} <span>Remove</span>`)
+        }, `<i class="svg"></i> <span>Remove</span>`)
       }
     }
 
@@ -426,8 +424,8 @@ class PageBuilder {
   }
 
   _addColFunc (col) {
-    let del = this._createEl('button', { 'class': this.className + '-col-del', 'title': 'Remove column' }, svg.delete)
-    let edit = this._createEl('button', { 'class': this.className + '-col-edit', 'title': 'Edit column' }, svg.edit)
+    let del = this._createEl('button', { 'class': this.className + '-col-del', 'title': 'Remove column' }, `<i class="svg"></i>`)
+    let edit = this._createEl('button', { 'class': this.className + '-col-edit', 'title': 'Edit column' }, `<i class="svg"></i>`)
 
     col.appendChild(del)
     col.appendChild(edit)
