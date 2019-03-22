@@ -794,6 +794,17 @@ if (typeof window === 'undefined') {
 
 /***/ }),
 
+/***/ "./src/sass/main.sass":
+/*!****************************!*\
+  !*** ./src/sass/main.sass ***!
+  \****************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+
 /***/ "./src/sass/pageBuilder.sass":
 /*!***********************************!*\
   !*** ./src/sass/pageBuilder.sass ***!
@@ -806,14 +817,15 @@ if (typeof window === 'undefined') {
 /***/ }),
 
 /***/ 0:
-/*!*****************************************************************!*\
-  !*** multi ./src/js/pageBuilder.js ./src/sass/pageBuilder.sass ***!
-  \*****************************************************************/
+/*!**************************************************************************************!*\
+  !*** multi ./src/js/pageBuilder.js ./src/sass/pageBuilder.sass ./src/sass/main.sass ***!
+  \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\Users\Administrator\Desktop\111\Plugins\page-builder\src\js\pageBuilder.js */"./src/js/pageBuilder.js");
-module.exports = __webpack_require__(/*! C:\Users\Administrator\Desktop\111\Plugins\page-builder\src\sass\pageBuilder.sass */"./src/sass/pageBuilder.sass");
+__webpack_require__(/*! C:\Users\Administrator\Desktop\111\Plugins\pageBuilder\src\js\pageBuilder.js */"./src/js/pageBuilder.js");
+__webpack_require__(/*! C:\Users\Administrator\Desktop\111\Plugins\pageBuilder\src\sass\pageBuilder.sass */"./src/sass/pageBuilder.sass");
+module.exports = __webpack_require__(/*! C:\Users\Administrator\Desktop\111\Plugins\pageBuilder\src\sass\main.sass */"./src/sass/main.sass");
 
 
 /***/ })

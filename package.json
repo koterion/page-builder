@@ -1,5 +1,5 @@
 {
-  "name": "@koterion/page-builder",
+  "name": "@koterion/page_builder",
   "version": "1.0.0",
   "description": "Plugin for create page structure",
   "scripts": {

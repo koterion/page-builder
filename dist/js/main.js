@@ -822,7 +822,7 @@ if (typeof window === 'undefined') {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! C:\Users\Administrator\Desktop\111\Plugins\page-builder\src\js\main.js */"./src/js/main.js");
+module.exports = __webpack_require__(/*! C:\Users\Administrator\Desktop\111\Plugins\pageBuilder\src\js\main.js */"./src/js/main.js");
 
 
 /***/ })
