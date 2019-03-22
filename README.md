@@ -29,4 +29,50 @@ or (if use Postcss)
 ### js
 ```js
 import "@koterion/page_builder"
+
+pageBuilder.create(selector, options)
 ```
+
+##Options
+
+option | type | desc |
+:--- | :---: | :--- |
+[tinymce](#tinymce) | object | TinyMCE settings |
+[height](#height)| string | Workplace height|
+[bgClasses](#bgclasses) | string | Backgrounds class names.|
+
+##Methods
+
+method | params | desc |
+:--- | :---: | :--- |
+`pageBuilder.create()` | `selector, options` | Create workplace |
+`pageBuilder.getContent()` | `id` | Get content of current by `id` field |
+
+##Examples:
+
+###use:
+
+```js
+import './pageBuilder'
+
+pageBuilder.create(document.querySelector('.textarea'),{})
+```
+### tinymce
+Initialize TinyMCE. Use `className` for selector
+```js
+{
+  tinymce.settings: (className) => {
+    tinymce.init({selector: className})
+  }
+}
+```
+
+### height
+{
+  height: '500px'
+}
+
+### bgClasses
+{
+  bgClasses: 'first, second, third'
+}
