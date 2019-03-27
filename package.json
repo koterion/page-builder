@@ -1,5 +1,5 @@
 {
-  "name": "@koterion/page-builder",
+  "name": "@koterion/page_builder",
   "version": "1.0.0",
   "description": "Plugin for create page structure",
   "scripts": {
@@ -30,15 +30,16 @@
   "files": [
     "dist"
   ],
-  "main": "dist/page-builder.js",
+  "style": "dist/css/pageBuilder.css",
+  "main": "dist/pageBuilder.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/koterion/page-builder"
+    "url": "https://github.com/koterion/page_builder"
   },
   "author": "koterion",
   "license": "MIT",
   "homepage": "",
-  "dependencies": {
+  "devDependencies": {
     "browser-sync": "^2.26.3",
     "browser-sync-webpack-plugin": "^2.2.2",
     "cross-env": "^5.2.0",
@@ -46,10 +47,9 @@
     "sass": "^1.16.1",
     "sass-loader": "^7.1.0",
     "tinymce": "^5.0.2",
-    "vue-template-compiler": "^2.5.22"
-  },
-  "devDependencies": {
+    "vue-template-compiler": "^2.5.22",
     "autoprefixer": "^9.4.6",
+    "sanitize.css": "^8.0.0",
     "express": "^4.16.4"
   }
 }
