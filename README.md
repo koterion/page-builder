@@ -43,10 +43,10 @@ option | type | desc |
 
 ##Methods
 
-method | params | desc |
-:--- | :---: | :--- |
-`pageBuilder.create()` | `selector, options` | Create workplace |
-`pageBuilder.getContent()` | `id` | Get content of current by `id` field |
+method | desc |
+:--- | :--- |
+`pageBuilder.create(selector, options)` | Create workplace |
+`pageBuilder.getContent(id)` | Get content of current by `id` field |
 
 ##Examples:
 
@@ -68,11 +68,15 @@ Initialize TinyMCE. Use `className` for selector
 ```
 
 ### height
+```js
 {
   height: '500px'
 }
+```
 
 ### bgClasses
+```js
 {
   bgClasses: 'first, second, third'
 }
+```
