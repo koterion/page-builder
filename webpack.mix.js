@@ -23,3 +23,8 @@ mix.js('src/js/pageBuilder.js', 'dist')
       autoprefixer
     ]
   })
+
+if (mix.inProduction()) {
+  mix.copy('*.html', '../demo/pageBuilder')
+    .copyDirectory('dist', '../demo/pageBuilder/dist')
+}
