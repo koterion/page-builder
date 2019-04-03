@@ -1,5 +1,5 @@
 # Page Builder
-plugin for create pages structure using wysiwyg (TinyMCE)
+plugin for create pages structure using wysiwyg (TinyMCE). [Examples](https://koterion.github.io/pageBuilder/)
 
 ## install
 

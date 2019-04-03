@@ -1,6 +1,6 @@
 {
   "name": "@koterion/page_builder",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Plugin for create page structure",
   "scripts": {
     "dev": "npm run development",
@@ -38,7 +38,7 @@
   },
   "author": "koterion",
   "license": "MIT",
-  "homepage": "",
+  "homepage": "https://koterion.github.io/pageBuilder/",
   "devDependencies": {
     "browser-sync": "^2.26.3",
     "browser-sync-webpack-plugin": "^2.2.2",
