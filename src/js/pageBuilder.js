@@ -51,7 +51,8 @@ let defaults = {
     }
   },
   height: '500px',
-  bgClasses: 'first, sec, third'
+  bgClasses: 'first, sec, third',
+  edit: true
 }
 
 class PageBuilder {
@@ -80,6 +81,14 @@ class PageBuilder {
   _changeSelector () {
     this.value = this.selector.value !== undefined ? this.selector.value : this.selector.innerHTML
     this.selector.style.display = 'none'
+
+    if (this.selector.dataset.edit) {
+      this.options.edit = this.selector.dataset.edit === 'true'
+    }
+
+    if (this.selector.dataset.bg) {
+      this.options.bgClasses = this.selector.dataset.bg
+    }
   }
 
   _createInterface () {
@@ -330,10 +339,13 @@ class PageBuilder {
     this.rows = this.body.querySelectorAll('div.' + this.className + '-row')
 
     forEachArr(this.rows, (el) => {
-      this._createRowMenu(el)
+      if (this.options.edit) {
+        this._createRowMenu(el)
+        this._connectMenuFunc(el)
+        this._createRowSettings(el)
+      }
+
       let num = el.dataset.col
-      this._connectMenuFunc(el)
-      this._createRowSettings(el)
 
       if (num < 1) {
         this._createCol(el, true)
@@ -351,11 +363,15 @@ class PageBuilder {
       })
 
       this.body.appendChild(row)
-      this._createRowMenu(row)
-      this._createRowSettings(row)
+
+      if (this.options.edit) {
+        this._createRowMenu(row)
+        this._createRowSettings(row)
+        this._connectMenuFunc(row)
+      }
+
       this._createCol(row)
       this.rows = this.body.querySelectorAll('div.' + this.className + '-row')
-      this._connectMenuFunc(row)
     })
   }
 
@@ -424,14 +440,21 @@ class PageBuilder {
   }
 
   _addColFunc (col) {
-    let del = this._createEl('button', { 'class': this.className + '-col-del', 'title': 'Remove column' }, `<i class="svg"></i>`)
-    let edit = this._createEl('button', { 'class': this.className + '-col-edit', 'title': 'Edit column' }, `<i class="svg"></i>`)
-
-    col.appendChild(del)
+    let edit = this._createEl('button', {
+      'class': this.className + '-col-edit',
+      'title': 'Edit column'
+    }, `<i class="svg"></i>`)
     col.appendChild(edit)
-
-    this._removeCol(del, col)
     this._editContent(edit, col)
+
+    if (this.options.edit) {
+      let del = this._createEl('button', {
+        'class': this.className + '-col-del',
+        'title': 'Remove column'
+      }, `<i class="svg"></i>`)
+      col.appendChild(del)
+      this._removeCol(del, col)
+    }
   }
 
   _addCol (el, row) {
@@ -504,8 +527,10 @@ class PageBuilder {
     forEachArr(rows, (row) => {
       let menu = row.querySelector('div.' + this.className + '-row-menu')
       let settings = row.querySelector('div.' + this.className + '-settings')
-      row.removeChild(menu)
-      row.removeChild(settings)
+
+      if (menu) row.removeChild(menu)
+      if (settings) row.removeChild(settings)
+
       let cols = row.querySelectorAll('div.' + this.className + '-col')
 
       if (cols.length > 1) {
@@ -516,8 +541,8 @@ class PageBuilder {
 
           delAttr(content, ['id', 'style', 'aria-hidden'])
 
-          col.removeChild(del)
-          col.removeChild(edit)
+          if (del) col.removeChild(del)
+          if (edit) col.removeChild(edit)
         })
       } else if (cols.length === 1) {
         cols = cols[0]
