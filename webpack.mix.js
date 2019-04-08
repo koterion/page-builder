@@ -12,7 +12,7 @@ mix.js('src/js/pageBuilder.js', 'dist')
       new BrowserSyncPlugin({
         host: 'localhost',
         port: 3000,
-        server: { baseDir: ['dist'] }
+        server: { baseDir: ['./'] }
       })
     ]
   })
