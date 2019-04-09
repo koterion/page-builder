@@ -62,17 +62,17 @@ $light: #fff
       margin-bottom: 30px
 
     &[data-col = '1'],&[data-set-col = '1']
-      > *+*
+      > *
         width: 100%
 
     @for $i from 2 through 6
       &[data-col = '#{$i}']
-        > *+*
+        > *
           width: 100%/$i - 1%
 
     @for $i from 2 through 6
       &[data-set-col = '#{$i}']
-        > *+*
+        > *
           width: 100%/$i - 1%
 
     > *
@@ -99,7 +99,7 @@ $light: #fff
       display: flex
       justify-content: flex-end
       align-items: center
-      width: calc(100% + 30px)
+      width: calc(100% + 30px) !important
       margin: 0 -15px
       padding: 10px 15px
       background-color: $light

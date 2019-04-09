@@ -33,13 +33,25 @@ import "@koterion/page_builder"
 pageBuilder.create(selector, options)
 ```
 
+### html
+```html
+<div class="YourUniqueClass" data-yourData="dataInfo">HTML</div>
+```
+
+or
+
+```html
+<textarea class="YourUniqueClass" name="YourUniqueName" data-yourData="dataInfo">HTML</textarea>
+```
+
 ##Options
 
 option | type | desc |
 :--- | :---: | :--- |
 [tinymce](#tinymce) | object | TinyMCE settings |
 [height](#height)| string | Workplace height|
-[bgClasses](#bgclasses) | string | Backgrounds class names.|
+[bgClasses](#bgclasses) | string | Backgrounds class names. Can use from html data.|
+[edit](#edit) | boolean | Turn on/off editing blocks. Can use from html data.|
 
 ##Methods
 
@@ -79,4 +91,23 @@ Initialize TinyMCE. Use `className` for selector
 {
   bgClasses: 'first, second, third'
 }
+```
+
+or
+
+```html
+<div data-bg="first, second, third">HTML</div>
+```
+
+### edit
+```js
+{
+  edit: true
+}
+```
+
+or
+
+```html
+<div data-edit="true">HTML</div>
 ```
