@@ -20,15 +20,15 @@ Include [TinyMCE](https://www.tiny.cloud/docs/quick-start/#step1includethetinymc
 @import url('~@koterion/page_builder/dist/css/pageBuilder.css');
 ```
 
-or (if use Postcss)
+or (if use Postcss import)
 
 ```css
-@import url('~@koterion/page_builder');
+@import url('@koterion/page_builder');
 ```
 
 ### js
 ```js
-import "@koterion/page_builder"
+import '@koterion/page_builder'
 
 pageBuilder.create(selector, options)
 ```
@@ -48,7 +48,7 @@ or
 
 option | type | desc |
 :--- | :---: | :--- |
-[tinymce](#tinymce) | object | TinyMCE settings |
+[tinymceSettings](#tinymce) | object | TinyMCE settings |
 [height](#height)| string | Workplace height|
 [bgClasses](#bgclasses) | string | Backgrounds class names. Can use from html data.|
 [edit](#edit) | boolean | Turn on/off editing blocks. Can use from html data.|
@@ -73,7 +73,7 @@ pageBuilder.create(document.querySelector('.textarea'),{})
 Initialize TinyMCE. Use `className` for selector
 ```js
 {
-  tinymce.settings: (className) => {
+  tinymceSettings: (className) => {
     tinymce.init({selector: className})
   }
 }

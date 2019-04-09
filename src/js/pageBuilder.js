@@ -18,41 +18,43 @@ let pageBuilder = {
     return list
   },
   getContent: function (id) {
-    return this.editors[id]._getContent()
+    if (this.editors[id]) {
+      return this.editors[id]._getContent()
+    } else {
+      console.error(`Didn't find plugin with id '${id}'`)
+    }
   }
 }
 
 let defaults = {
-  tinymce: {
-    settings: (className) => {
-      tinymce.init({
-        menubar: false,
-        selector: className,
-        height: 400,
-        plugins: 'link table lists paste',
-        toolbar: 'formatselect | table',
-        setup: function (editor) {
-          editor.ui.registry.addContextToolbar('textselection', {
-            predicate: function (node) {
-              return !editor.selection.isCollapsed()
-            },
-            items: 'bold italic underline | bullist numlist | alignleft aligncenter alignright',
-            position: 'selection',
-            scope: 'node'
-          })
-        }
-      })
-    },
-    setContent: (editor, content) => {
-      tinymce.get(editor.id).setContent(content)
-    },
-    getContent: (editor) => {
-      return tinymce.get(editor.id).getContent()
-    }
-  },
   height: '500px',
   bgClasses: 'first, sec, third',
-  edit: true
+  edit: true,
+  tinymceSettings: (className) => {
+    tinymce.init({
+      menubar: false,
+      selector: className,
+      height: 400,
+      plugins: 'link table lists paste',
+      toolbar: 'formatselect | table',
+      setup: function (editor) {
+        editor.ui.registry.addContextToolbar('textselection', {
+          predicate: function (node) {
+            return !editor.selection.isCollapsed()
+          },
+          items: 'bold italic underline | bullist numlist | alignleft aligncenter alignright',
+          position: 'selection',
+          scope: 'node'
+        })
+      }
+    })
+  },
+  setTinymceContent: (editor, content) => {
+    tinymce.get(editor.id).setContent(content)
+  },
+  getTinymceContent: (editor) => {
+    return tinymce.get(editor.id).getContent()
+  }
 }
 
 class PageBuilder {
@@ -107,7 +109,8 @@ class PageBuilder {
 
     this.menuItem = {
       'add': this._createEl('button', {
-        'class': this.className + '-menu-item-add'
+        'class': this.className + '-menu-item-add',
+        'type': 'button'
       }, `<i class="svg"></i> <span>Add block</span>`)
     }
 
@@ -145,11 +148,13 @@ class PageBuilder {
       }, `Edit content`),
       _this._createEl('button', {
         'class': className + '-close',
-        'title': 'Close'
+        'title': 'Close',
+        'type': 'button'
       }, `<i class="svg"></i> <span>Exit (without saving changes)</span>`),
       _this._createEl('button', {
         'class': className + '-save',
-        'title': 'Save'
+        'title': 'Save',
+        'type': 'button'
       }, `<i class="svg"></i> <span>Save changes</span>`),
       _this._createEl('div', { 'class': _this.textareaEditor })
     ]
@@ -162,7 +167,7 @@ class PageBuilder {
     })
     _this.wrapBlock.appendChild(_this.editor)
 
-    addTiny('div.' + this.textareaEditor)
+    _this._addTiny('div.' + this.textareaEditor)
 
     on(close, 'click', () => {
       closeEditor()
@@ -171,7 +176,7 @@ class PageBuilder {
     on(save, 'click', () => {
       let content = closeEditor()
 
-      content.innerHTML = _this.options.tinymce.getContent(block.querySelector('div.' + _this.textareaEditor))
+      content.innerHTML = _this.options.getTinymceContent(block.querySelector('div.' + _this.textareaEditor))
     })
 
     function closeEditor () {
@@ -201,11 +206,13 @@ class PageBuilder {
       }),
       _this._createEl('button', {
         'class': className + '-close',
-        'title': 'Close'
+        'title': 'Close',
+        'type': 'button'
       }, `<i class="svg"></i> <span>Exit (without saving changes)</span>`),
       _this._createEl('button', {
         'class': className + '-save',
-        'title': 'Save'
+        'title': 'Save',
+        'type': 'button'
       }, `<i class="svg"></i> <span>Save changes</span>`),
       _this._createEl('h3', {
         'class': className + '-h3'
@@ -303,7 +310,8 @@ class PageBuilder {
     let settings = this._createEl('button', {
       'class': className + '-settings',
       'title': 'Settings for row',
-      'data-role': 'settingRow'
+      'data-role': 'settingRow',
+      'type': 'button'
     }, `<i class="svg"></i> <span>Settings</span>`)
 
     let menu = {
@@ -311,15 +319,18 @@ class PageBuilder {
       'buttons': {
         'edit': this._createEl('button', {
           'title': 'Edit row style',
-          'data-role': 'editRow'
+          'data-role': 'editRow',
+          'type': 'button'
         }, `<i class="svg"></i> <span>Edit</span>`),
         'column': this._createEl('button', {
           'title': 'Add column',
-          'data-role': 'addCol'
+          'data-role': 'addCol',
+          'type': 'button'
         }, `<i class="svg"></i> <span>Add column</span>`),
         'delete': this._createEl('button', {
           'title': 'Remove this row',
-          'data-role': 'delRow'
+          'data-role': 'delRow',
+          'type': 'button'
         }, `<i class="svg"></i> <span>Remove</span>`)
       }
     }
@@ -337,6 +348,19 @@ class PageBuilder {
 
   _createRow () {
     this.rows = this.body.querySelectorAll('div.' + this.className + '-row')
+
+    if (this.rows.length < 1) {
+      this.body.innerHTML = ''
+      let row = this._createEl('div', {
+        'class': this.className + '-row',
+        'data-col': 0
+      })
+
+      this._createCol(row, true, this.value)
+
+      this.body.appendChild(row)
+      this.rows = this.body.querySelectorAll('div.' + this.className + '-row')
+    }
 
     forEachArr(this.rows, (el) => {
       if (this.options.edit) {
@@ -426,12 +450,12 @@ class PageBuilder {
     })
   }
 
-  _createCol (row, exists = false) {
+  _createCol (row, exists = false, inner = '') {
     let col = this._createEl('div', { 'class': this.className + '-col' })
 
     this._addColFunc(col)
 
-    let content = exists && row.querySelector('div.' + this.className + '-content') ? row.querySelector('div.' + this.className + '-content') : this._createEl('div', { 'class': this.className + '-content' })
+    let content = exists && row.querySelector('div.' + this.className + '-content') ? row.querySelector('div.' + this.className + '-content') : this._createEl('div', { 'class': this.className + '-content' }, inner)
 
     col.appendChild(content)
     row.appendChild(col)
@@ -442,7 +466,8 @@ class PageBuilder {
   _addColFunc (col) {
     let edit = this._createEl('button', {
       'class': this.className + '-col-edit',
-      'title': 'Edit column'
+      'title': 'Edit column',
+      'type': 'button'
     }, `<i class="svg"></i>`)
     col.appendChild(edit)
     this._editContent(edit, col)
@@ -450,7 +475,8 @@ class PageBuilder {
     if (this.options.edit) {
       let del = this._createEl('button', {
         'class': this.className + '-col-del',
-        'title': 'Remove column'
+        'title': 'Remove column',
+        'type': 'button'
       }, `<i class="svg"></i>`)
       col.appendChild(del)
       this._removeCol(del, col)
@@ -490,7 +516,7 @@ class PageBuilder {
       let content = col.querySelector('div.' + this.className + '-content')
       let editor = this.editor.querySelector('div.' + this.textareaEditor)
       editor.innerHTML = content.innerHTML
-      this.options.tinymce.setContent(editor, content.innerHTML)
+      this.options.setTinymceContent(editor, content.innerHTML)
       content.classList.add('changing')
     })
   }
@@ -566,10 +592,10 @@ class PageBuilder {
 
     return html.innerHTML
   }
-}
 
-function addTiny (className) {
-  defaults.tinymce.settings(className)
+  _addTiny (className) {
+    this.options.tinymceSettings(className)
+  }
 }
 
 function checkSelector (selector) {
