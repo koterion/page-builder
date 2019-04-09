@@ -23,6 +23,9 @@ let pageBuilder = {
     } else {
       console.error(`Didn't find plugin with id '${id}'`)
     }
+  },
+  rebuild: function (id) {
+    this.editors[id]._rebuild()
   }
 }
 
@@ -595,6 +598,13 @@ class PageBuilder {
 
   _addTiny (className) {
     this.options.tinymceSettings(className)
+  }
+
+  _rebuild () {
+    if (this.wrapBlock.parentElement) {
+      this.wrapBlock.parentElement.removeChild(this.wrapBlock)
+      pageBuilder.create(this.selector, this.options)
+    }
   }
 }
 

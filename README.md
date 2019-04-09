@@ -59,15 +59,16 @@ method | desc |
 :--- | :--- |
 `pageBuilder.create(selector, options)` | Create workplace |
 `pageBuilder.getContent(id)` | Get content of current by `id` field |
+`pageBuilder.rebuild(id)` | Rebuild current by `id` field |
 
 ##Examples:
 
 ###use:
 
 ```js
-import './pageBuilder'
+import '@koterion/page_builder'
 
-pageBuilder.create(document.querySelector('.textarea'),{})
+pageBuilder.create(document.querySelector('.textarea'))
 ```
 ### tinymce
 Initialize TinyMCE. Use `className` for selector
