@@ -5,6 +5,5 @@ pageBuilder.create(document.querySelector('.textarea'), {
 })
 
 $('.clicker').on('click', function () {
-  pageBuilder.rebuild('pgBld_0')
-  // console.dir(pageBuilder.getContent('pgBld_0'))
+  console.dir(pageBuilder.getContent('pgBld_0'))
 })
