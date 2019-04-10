@@ -77,7 +77,7 @@ class PageBuilder {
     this._changeSelector()
     this._createInterface()
     this._createBody()
-    this._createMenu()
+    if (this.options.edit) this._createMenu()
     this._createEditor()
     this._createRow()
     this._clickDoc()
@@ -383,23 +383,25 @@ class PageBuilder {
       }
     })
 
-    on(this.menuItem.add, 'click', () => {
-      let row = this._createEl('div', {
-        'class': this.className + '-row',
-        'data-col': 0
+    if (this.options.edit) {
+      on(this.menuItem.add, 'click', () => {
+        let row = this._createEl('div', {
+          'class': this.className + '-row',
+          'data-col': 0
+        })
+
+        this.body.appendChild(row)
+
+        if (this.options.edit) {
+          this._createRowMenu(row)
+          this._createRowSettings(row)
+          this._connectMenuFunc(row)
+        }
+
+        this._createCol(row)
+        this.rows = this.body.querySelectorAll('div.' + this.className + '-row')
       })
-
-      this.body.appendChild(row)
-
-      if (this.options.edit) {
-        this._createRowMenu(row)
-        this._createRowSettings(row)
-        this._connectMenuFunc(row)
-      }
-
-      this._createCol(row)
-      this.rows = this.body.querySelectorAll('div.' + this.className + '-row')
-    })
+    }
   }
 
   _connectMenuFunc (row) {
