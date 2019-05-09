@@ -425,35 +425,16 @@ $light: #fff
           color: #ff005d
 
     &-bgCol
-      margin: 6px 8px
       height: 35px
-      width: 35px
+      width: 100%
       cursor: pointer
-      position: relative
-      background: transparent center center no-repeat
-      background-size: cover
-
-      &:after
-        content: ''
-        display: block
-        position: absolute
-        left: -8px
-        top: -6px
-        width: calc(100% + 16px)
-        height: calc(100% + 12px)
-        border: 2px solid transparent
-        transition: border-color .4s
-
-      &.active
-        &:after
-          border-color: #000
-
-      &.def
-        .svg
-          display: block
-          width: 35px
-          height: 35px
-          background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="55 50 180 180" fill="none" stroke="black" stroke-width="6" stroke-miterlimit="10"><line class="st0" x1="59.8" y1="53.5" x2="231.3" y2="225"/><line class="st0" x1="231.3" y1="53.5" x2="59.8" y2="225"/></svg>') center center no-repeat
+      background-color: #fff
+      border: 1px solid transparent
+      padding: 7px 9px
+      border-radius: 3px
+      box-shadow: 0.618px 1.902px 4px 0 rgba(0, 0, 0, 0.16)
+      outline: none
+      transition: border-color 0.4s
 
     &-save, &-close
       display: inline-flex
