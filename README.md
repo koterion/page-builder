@@ -44,7 +44,7 @@ or
 <textarea class="YourUniqueClass" name="YourUniqueName" data-yourData="dataInfo">HTML</textarea>
 ```
 
-##Options
+## Options
 
 option | type | desc |
 :--- | :---: | :--- |
@@ -61,9 +61,9 @@ method | desc |
 `pageBuilder.getContent(id)` | Get content of current by `id` field |
 `pageBuilder.rebuild(id)` | Rebuild current by `id` field |
 
-##Examples:
+## Examples:
 
-###use:
+### use:
 
 ```js
 import '@koterion/page_builder'
@@ -88,6 +88,7 @@ Initialize TinyMCE. Use `className` for selector
 ```
 
 ### bgClasses
+Use in current format, separator ', '
 ```js
 {
   bgClasses: 'first, second, third'
