@@ -197,7 +197,7 @@ class PageBuilder {
       'class': className
     })
 
-    let [bgRow, column, footer, close, save, bgText, colText] = [
+    let [bgRow, column, footer, select, close, save, bgText, colText] = [
       _this._createEl('div', {
         'class': className + '-bgRow'
       }),
@@ -206,6 +206,9 @@ class PageBuilder {
       }),
       _this._createEl('div', {
         'class': className + '-footer'
+      }),
+      _this._createEl('select', {
+        'class': className + '-bgCol'
       }),
       _this._createEl('button', {
         'class': className + '-close',
@@ -219,32 +222,26 @@ class PageBuilder {
       }, `<i class="svg"></i> <span>Save changes</span>`),
       _this._createEl('h3', {
         'class': className + '-h3'
-      }, `Background style`),
+      }, `Row class`),
       _this._createEl('h3', {
         'class': className + '-h3'
       }, `Number of columns in a row`)
     ]
 
     bgRow.appendChild(bgText)
+    bgRow.appendChild(select)
     column.appendChild(colText)
     footer.appendChild(close)
     footer.appendChild(save)
 
     forEachArr(('def, ' + _this.options.bgClasses).split(', '), (el) => {
-      let bg = _this._createEl('div', {
-        'class': className + '-bgCol ' + el,
-        'data-class': el
-      })
+      let option = _this._createEl('option', {
+        'value': el
+      }, el)
 
-      if (el === 'def') bg.innerHTML = `<i class="svg"></i>`
+      if (el === 'def') option.innerText = `none`
 
-      bgRow.appendChild(bg)
-
-      on(bg, 'click', function () {
-        removeActive(bgRow.querySelector('.active'))
-
-        bg.classList.add('active')
-      })
+      select.appendChild(option)
     })
 
     forEachArr([bgRow, column, footer], (el) => {
@@ -278,12 +275,12 @@ class PageBuilder {
 
     on(save, 'click', function () {
       let row = closeSettings()
-      let bg = bgRow.querySelector('.active')
+      let bg = select.value
       let col = column.querySelector('.active')
 
       row.className = _this.className + '-row'
 
-      if (bg && bg.dataset.class !== 'def') row.classList.add(bg.dataset.class)
+      if (bg !== 'def') row.classList.add(bg)
       if (col) row.dataset.col = col.dataset.col
     })
 
@@ -435,6 +432,7 @@ class PageBuilder {
       let settings = row.querySelector('div.' + this.className + '-settings')
       let col = row.dataset.setCol ? row.dataset.setCol : row.dataset.col
       let bgCol = false
+      let select = settings.querySelector('select.' + this.className + '-settings-bgCol')
 
       forEachArr(settings.querySelectorAll('div.' + this.className + '-settings-bgCol, div[data-col]'), (el) => {
         el.classList.remove('active')
@@ -442,13 +440,13 @@ class PageBuilder {
 
       forEachArr(row.classList, (el) => {
         if (el !== 'changing' && el !== this.className + '-row') {
-          settings.querySelector('div.' + el).classList.add('active')
+          select.value = el
           bgCol = true
         }
       })
 
       if (!bgCol) {
-        settings.querySelector('div.' + this.className + '-settings-bgCol.def').classList.add('active')
+        select.value = ''
       }
 
       settings.querySelector('div[data-col = "' + col + '"]').classList.add('active')
