@@ -446,7 +446,7 @@ class PageBuilder {
       })
 
       if (!bgCol) {
-        select.value = ''
+        select.value = 'def'
       }
 
       settings.querySelector('div[data-col = "' + col + '"]').classList.add('active')
