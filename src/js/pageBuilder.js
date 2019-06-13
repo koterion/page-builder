@@ -31,7 +31,8 @@ let pageBuilder = {
 
 let defaults = {
   height: '500px',
-  bgClasses: 'first, sec, third',
+  rowClasses: 'first, sec, third',
+  colClasses: 'full',
   edit: true,
   tinymceSettings: (className) => {
     tinymce.init({
@@ -91,8 +92,12 @@ class PageBuilder {
       this.options.edit = this.selector.dataset.edit === 'true'
     }
 
-    if (this.selector.dataset.bg) {
-      this.options.bgClasses = this.selector.dataset.bg
+    if (this.selector.dataset.rowClasses) {
+      this.options.rowClasses = this.selector.dataset.rowClasses
+    }
+
+    if (this.selector.dataset.colClasses) {
+      this.options.colClasses = this.selector.dataset.colClasses
     }
   }
 
@@ -234,7 +239,7 @@ class PageBuilder {
     footer.appendChild(close)
     footer.appendChild(save)
 
-    forEachArr(('def, ' + _this.options.bgClasses).split(', '), (el) => {
+    forEachArr(('def, ' + _this.options.rowClasses).split(', '), (el) => {
       let option = _this._createEl('option', {
         'value': el
       }, el)
@@ -348,8 +353,10 @@ class PageBuilder {
 
   _createRow () {
     this.rows = this.body.querySelectorAll('div.' + this.className + '-row')
+    let create = false
 
     if (this.rows.length < 1) {
+      create = true
       this.body.innerHTML = ''
       let row = this._createEl('div', {
         'class': this.className + '-row',
@@ -373,7 +380,7 @@ class PageBuilder {
 
       if (num < 1) {
         this._createCol(el, true)
-      } else {
+      } else if (!create) {
         forEachArr(el.querySelectorAll('div.' + this.className + '-col'), (col) => {
           this._addColFunc(col)
         })
@@ -439,7 +446,7 @@ class PageBuilder {
       })
 
       forEachArr(row.classList, (el) => {
-        if (el !== 'changing' && el !== this.className + '-row') {
+        if (this.options.rowClasses.includes(el)) {
           select.value = el
           bgCol = true
         }
@@ -483,6 +490,15 @@ class PageBuilder {
       }, `<i class="svg"></i>`)
       col.appendChild(del)
       this._removeCol(del, col)
+
+      let setting = this._createEl('button', {
+        'class': this.className + '-col-settings',
+        'title': 'Settings',
+        'type': 'button'
+      }, `<i class="svg"></i>`)
+      col.appendChild(setting)
+      this._openColSetting(setting, col)
+      this._createColSettings(col)
     }
   }
 
@@ -513,6 +529,95 @@ class PageBuilder {
     })
   }
 
+  _createColSettings (column) {
+    let className = this.className + '-colSettings'
+    let _this = this
+    let [setting, classes, footer, text, select, close, save] = [
+      _this._createEl('div', {
+        'class': className
+      }),
+      _this._createEl('div', {
+        'class': className + '-classes'
+      }),
+      _this._createEl('div', {
+        'class': className + '-footer'
+      }),
+      _this._createEl('h3', {
+        'class': className + '-h3'
+      }, `Col class`),
+      _this._createEl('select', {
+        'class': className + '-select'
+      }),
+      _this._createEl('button', {
+        'class': className + '-close',
+        'title': 'Close',
+        'type': 'button'
+      }, `<i class="svg"></i> <span>Exit</span>`),
+      _this._createEl('button', {
+        'class': className + '-save',
+        'title': 'Save',
+        'type': 'button'
+      }, `<i class="svg"></i> <span>Save changes</span>`)
+    ]
+
+    forEachArr(('def, ' + _this.options.colClasses).split(', '), (el) => {
+      let option = _this._createEl('option', {
+        'value': el
+      }, el)
+
+      if (el === 'def') option.innerText = `none`
+
+      select.appendChild(option)
+    })
+
+    classes.appendChild(text)
+    classes.appendChild(select)
+    footer.appendChild(close)
+    footer.appendChild(save)
+    setting.appendChild(classes)
+    setting.appendChild(footer)
+
+    column.appendChild(setting)
+
+    on(close, 'click', function () {
+      column.classList.remove('changingCol')
+    })
+
+    on(save, 'click', function () {
+      let val = select.value
+      if (val === 'def') {
+        column.classList = _this.className + '-col'
+      } else {
+        column.classList = _this.className + '-col ' + val
+      }
+    })
+  }
+
+  _openColSetting (el, column) {
+    on(el, 'click', () => {
+      let cols = this.body.querySelectorAll('.changingCol')
+      let select = column.querySelector('.' + this.className + '-colSettings-select')
+      forEachArr(cols, (el) => {
+        el.classList.remove('changingCol')
+      })
+
+      column.classList.add('changingCol')
+
+      let def = false
+
+      forEachArr(column.classList, (el) => {
+        if (this.options.colClasses.includes(el)) {
+          select.value = el
+          def = true
+        }
+      })
+
+      if (!def) {
+        select.value = 'def'
+      }
+    })
+  }
+
   _editContent (el, col) {
     on(el, 'click', () => {
       this.editor.classList.add('show')
@@ -527,13 +632,19 @@ class PageBuilder {
   _clickDoc () {
     on(document, 'mouseup', (event) => {
       let block = this.wrapBlock.querySelector('.editing')
+      let col = this.body.querySelector('.changingCol')
       if (block) {
         let row = this.body.querySelector('.changing')
-        if (!row.contains(event.target)) {
+
+        if (row && !row.contains(event.target)) {
           row.classList.remove('changing')
           row.removeAttribute('data-action')
           block.classList.remove('editing')
         }
+      }
+
+      if (col && !col.contains(event.target)) {
+        col.classList.remove('changingCol')
       }
     })
   }
@@ -567,11 +678,15 @@ class PageBuilder {
           let del = col.querySelector('.' + this.className + '-col-del')
           let edit = col.querySelector('.' + this.className + '-col-edit')
           let content = col.querySelector('.' + this.className + '-content')
+          let settingsBtn = col.querySelector('.' + this.className + '-col-settings')
+          let colSettings = col.querySelector('.' + this.className + '-colSettings')
 
           delAttr(content, ['id', 'style', 'aria-hidden'])
 
           if (del) col.removeChild(del)
           if (edit) col.removeChild(edit)
+          if (settingsBtn) col.removeChild(settingsBtn)
+          if (colSettings) col.removeChild(colSettings)
         })
       } else if (cols.length === 1) {
         cols = cols[0]
