@@ -92,12 +92,12 @@ class PageBuilder {
       this.options.edit = this.selector.dataset.edit === 'true'
     }
 
-    if (this.selector.dataset.rowClasses) {
-      this.options.rowClasses = this.selector.dataset.rowClasses
+    if (this.selector.dataset.rowclasses) {
+      this.options.rowClasses = this.selector.dataset.rowclasses
     }
 
-    if (this.selector.dataset.colClasses) {
-      this.options.colClasses = this.selector.dataset.colClasses
+    if (this.selector.dataset.colclasses) {
+      this.options.colClasses = this.selector.dataset.colclasses
     }
   }
 
