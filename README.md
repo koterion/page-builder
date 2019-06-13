@@ -50,7 +50,8 @@ option | type | desc |
 :--- | :---: | :--- |
 [tinymceSettings](#tinymce) | object | TinyMCE settings |
 [height](#height)| string | Workplace height|
-[bgClasses](#bgclasses) | string | Backgrounds class names. Can use from html data.|
+[rowClasses](#rowclasses) | string | Row class names. Can use from html data.|
+[colClasses](#colClasses) | string | Col class names. Can use from html data.|
 [edit](#edit) | boolean | Turn on/off editing blocks. Can use from html data.|
 
 ##Methods
@@ -87,18 +88,32 @@ Initialize TinyMCE. Use `className` for selector
 }
 ```
 
-### bgClasses
+### rowClasses
 Use in current format, separator ', '
 ```js
 {
-  bgClasses: 'first, second, third'
+  rowClasses: 'first, second, third'
 }
 ```
 
 or
 
 ```html
-<div data-bg="first, second, third">HTML</div>
+<div data-rowClasses="first, second, third">HTML</div>
+```
+
+### colClasses
+Use in current format, separator ', '
+```js
+{
+  colClasses: 'full'
+}
+```
+
+or
+
+```html
+<div data-colClasses="first, second, third">HTML</div>
 ```
 
 ### edit
