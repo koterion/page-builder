@@ -1,7 +1,7 @@
 'use strict'
 
 let id = 0
-let pageBuilder = {
+const pageBuilder = {
   editors: {},
   create: function (selector, options) {
     try {
@@ -11,7 +11,7 @@ let pageBuilder = {
       return false
     }
 
-    let list = new PageBuilder(selector, options)
+    const list = new PageBuilder(selector, options)
     list._init()
     this.editors[list.className + '_' + id] = list
     id += id
@@ -29,7 +29,7 @@ let pageBuilder = {
   }
 }
 
-let defaults = {
+const defaults = {
   height: '500px',
   rowClasses: 'first, sec, third',
   colClasses: 'full',
@@ -67,10 +67,10 @@ class PageBuilder {
     this.className = 'pgBld'
     this.textareaEditor = this.className + '-editor-textarea'
 
-    let customOptions = options || {}
+    const customOptions = options || {}
     this.options = {}
     forEachObj(defaults, (key, value) => {
-      this.options[key] = (customOptions.hasOwnProperty(key)) ? customOptions[key] : value
+      this.options[key] = (Object.prototype.hasOwnProperty.call(customOptions, key)) ? customOptions[key] : value
     })
   }
 
@@ -78,7 +78,9 @@ class PageBuilder {
     this._changeSelector()
     this._createInterface()
     this._createBody()
-    if (this.options.edit) this._createMenu()
+    if (this.options.edit) {
+      this._createMenu()
+    }
     this._createEditor()
     this._createRow()
     this._clickDoc()
@@ -103,8 +105,8 @@ class PageBuilder {
 
   _createInterface () {
     this.wrapBlock = this._createEl('div', {
-      'id': this.className + '_' + id,
-      'class': this.className
+      id: this.className + '_' + id,
+      class: this.className
     })
     this.selector.parentNode.insertBefore(this.wrapBlock, this.selector)
     this.wrapBlock.style.height = this.options.height
@@ -112,13 +114,13 @@ class PageBuilder {
 
   _createMenu () {
     this.menu = this._createEl('div', {
-      'class': this.className + '-menu'
+      class: this.className + '-menu'
     })
 
     this.menuItem = {
-      'add': this._createEl('button', {
-        'class': this.className + '-menu-item-add',
-        'type': 'button'
+      add: this._createEl('button', {
+        class: this.className + '-menu-item-add',
+        type: 'button'
       }, `<i class="svg"></i> <span>Add block</span>`)
     }
 
@@ -131,40 +133,40 @@ class PageBuilder {
 
   _createBody () {
     this.body = this._createEl('div', {
-      'class': this.className + '-body'
+      class: this.className + '-body'
     }, this.value)
 
     this.wrapBlock.appendChild(this.body)
   }
 
   _createEditor () {
-    let _this = this
-    let className = _this.className + '-editor'
+    const _this = this
+    const className = _this.className + '-editor'
     _this.editor = _this._createEl('div', {
-      'class': className
+      class: className
     })
 
-    let [block, footer, title, close, save, textarea] = [
+    const [block, footer, title, close, save, textarea] = [
       _this._createEl('div', {
-        'class': className + '-block'
+        class: className + '-block'
       }),
       _this._createEl('div', {
-        'class': className + '-footer'
+        class: className + '-footer'
       }),
       _this._createEl('h3', {
-        'class': className + '-h3'
+        class: className + '-h3'
       }, `Edit content`),
       _this._createEl('button', {
-        'class': className + '-close',
-        'title': 'Close',
-        'type': 'button'
+        class: className + '-close',
+        title: 'Close',
+        type: 'button'
       }, `<i class="svg"></i> <span>Exit (without saving changes)</span>`),
       _this._createEl('button', {
-        'class': className + '-save',
-        'title': 'Save',
-        'type': 'button'
+        class: className + '-save',
+        title: 'Save',
+        type: 'button'
       }, `<i class="svg"></i> <span>Save changes</span>`),
-      _this._createEl('div', { 'class': _this.textareaEditor })
+      _this._createEl('div', { class: _this.textareaEditor })
     ]
 
     _this.editor.appendChild(block)
@@ -182,13 +184,13 @@ class PageBuilder {
     })
 
     on(save, 'click', () => {
-      let content = closeEditor()
+      const content = closeEditor()
 
       content.innerHTML = _this.options.getTinymceContent(block.querySelector('div.' + _this.textareaEditor))
     })
 
     function closeEditor () {
-      let content = _this.wrapBlock.querySelector('div.' + _this.className + '-content.changing')
+      const content = _this.wrapBlock.querySelector('div.' + _this.className + '-content.changing')
       _this.editor.classList.remove('show')
       content.classList.remove('changing')
       return content
@@ -196,40 +198,40 @@ class PageBuilder {
   }
 
   _createRowSettings (row) {
-    let _this = this
-    let className = _this.className + '-settings'
-    let rowSettings = _this._createEl('div', {
-      'class': className
+    const _this = this
+    const className = _this.className + '-settings'
+    const rowSettings = _this._createEl('div', {
+      class: className
     })
 
-    let [bgRow, column, footer, select, close, save, bgText, colText] = [
+    const [bgRow, column, footer, select, close, save, bgText, colText] = [
       _this._createEl('div', {
-        'class': className + '-bgRow'
+        class: className + '-bgRow'
       }),
       _this._createEl('div', {
-        'class': className + '-column'
+        class: className + '-column'
       }),
       _this._createEl('div', {
-        'class': className + '-footer'
+        class: className + '-footer'
       }),
       _this._createEl('select', {
-        'class': className + '-bgCol'
+        class: className + '-bgCol'
       }),
       _this._createEl('button', {
-        'class': className + '-close',
-        'title': 'Close',
-        'type': 'button'
+        class: className + '-close',
+        title: 'Close',
+        type: 'button'
       }, `<i class="svg"></i> <span>Exit (without saving changes)</span>`),
       _this._createEl('button', {
-        'class': className + '-save',
-        'title': 'Save',
-        'type': 'button'
+        class: className + '-save',
+        title: 'Save',
+        type: 'button'
       }, `<i class="svg"></i> <span>Save changes</span>`),
       _this._createEl('h3', {
-        'class': className + '-h3'
+        class: className + '-h3'
       }, `Row class`),
       _this._createEl('h3', {
-        'class': className + '-h3'
+        class: className + '-h3'
       }, `Number of columns in a row`)
     ]
 
@@ -240,11 +242,13 @@ class PageBuilder {
     footer.appendChild(save)
 
     forEachArr(('def, ' + _this.options.rowClasses).split(', '), (el) => {
-      let option = _this._createEl('option', {
-        'value': el
+      const option = _this._createEl('option', {
+        value: el
       }, el)
 
-      if (el === 'def') option.innerText = `none`
+      if (el === 'def') {
+        option.innerText = `none`
+      }
 
       select.appendChild(option)
     })
@@ -254,7 +258,7 @@ class PageBuilder {
     })
 
     for (let i = 1; i <= 6; i++) {
-      let col = this._createEl('div', {
+      const col = this._createEl('div', {
         'data-col': i
       }, `<i class="svg"></i> <span>${i}</span>`)
 
@@ -270,27 +274,35 @@ class PageBuilder {
     row.appendChild(rowSettings)
 
     on(close, 'click', function () {
-      let row = closeSettings()
-      let bgItem = row.querySelector('div.' + className + '-bgCol.active')
-      let colItem = row.querySelector('div[data-col].active')
+      const row = closeSettings()
+      const bgItem = row.querySelector('div.' + className + '-bgCol.active')
+      const colItem = row.querySelector('div[data-col].active')
 
-      if (bgItem) bgItem.classList.remove('active')
-      if (colItem) colItem.classList.remove('active')
+      if (bgItem) {
+        bgItem.classList.remove('active')
+      }
+      if (colItem) {
+        colItem.classList.remove('active')
+      }
     })
 
     on(save, 'click', function () {
-      let row = closeSettings()
-      let bg = select.value
-      let col = column.querySelector('.active')
+      const row = closeSettings()
+      const bg = select.value
+      const col = column.querySelector('.active')
 
       row.className = _this.className + '-row'
 
-      if (bg !== 'def') row.classList.add(bg)
-      if (col) row.dataset.col = col.dataset.col
+      if (bg !== 'def') {
+        row.classList.add(bg)
+      }
+      if (col) {
+        row.dataset.setCol = col.dataset.col
+      }
     })
 
     function closeSettings () {
-      let row = _this.wrapBlock.querySelector('div.' + _this.className + '-row.changing')
+      const row = _this.wrapBlock.querySelector('div.' + _this.className + '-row.changing')
 
       row.classList.remove('changing')
       row.removeAttribute('data-action')
@@ -307,35 +319,35 @@ class PageBuilder {
   }
 
   _createRowMenu (row) {
-    let className = this.className + '-row-menu'
+    const className = this.className + '-row-menu'
     this.rowMenu = this._createEl('div', {
-      'class': className
+      class: className
     })
 
-    let settings = this._createEl('button', {
-      'class': className + '-settings',
-      'title': 'Settings for row',
+    const settings = this._createEl('button', {
+      class: className + '-settings',
+      title: 'Settings for row',
       'data-role': 'settingRow',
-      'type': 'button'
+      type: 'button'
     }, `<i class="svg"></i> <span>Settings</span>`)
 
-    let menu = {
-      'block': this._createEl('div', { 'class': className + '-block' }),
-      'buttons': {
-        'edit': this._createEl('button', {
-          'title': 'Edit row style',
+    const menu = {
+      block: this._createEl('div', { class: className + '-block' }),
+      buttons: {
+        edit: this._createEl('button', {
+          title: 'Edit row style',
           'data-role': 'editRow',
-          'type': 'button'
+          type: 'button'
         }, `<i class="svg"></i> <span>Edit</span>`),
-        'column': this._createEl('button', {
-          'title': 'Add column',
+        column: this._createEl('button', {
+          title: 'Add column',
           'data-role': 'addCol',
-          'type': 'button'
+          type: 'button'
         }, `<i class="svg"></i> <span>Add column</span>`),
-        'delete': this._createEl('button', {
-          'title': 'Remove this row',
+        delete: this._createEl('button', {
+          title: 'Remove this row',
           'data-role': 'delRow',
-          'type': 'button'
+          type: 'button'
         }, `<i class="svg"></i> <span>Remove</span>`)
       }
     }
@@ -358,8 +370,8 @@ class PageBuilder {
     if (this.rows.length < 1) {
       create = true
       this.body.innerHTML = ''
-      let row = this._createEl('div', {
-        'class': this.className + '-row',
+      const row = this._createEl('div', {
+        class: this.className + '-row',
         'data-col': 0
       })
 
@@ -376,7 +388,7 @@ class PageBuilder {
         this._createRowSettings(el)
       }
 
-      let num = el.dataset.col
+      const num = el.dataset.col
 
       if (num < 1) {
         this._createCol(el, true)
@@ -389,8 +401,8 @@ class PageBuilder {
 
     if (this.options.edit) {
       on(this.menuItem.add, 'click', () => {
-        let row = this._createEl('div', {
-          'class': this.className + '-row',
+        const row = this._createEl('div', {
+          class: this.className + '-row',
           'data-col': 0
         })
 
@@ -436,10 +448,10 @@ class PageBuilder {
   _editRow (el, row) {
     on(el, 'click', () => {
       row.dataset.action = 'edit'
-      let settings = row.querySelector('div.' + this.className + '-settings')
-      let col = row.dataset.setCol ? row.dataset.setCol : row.dataset.col
+      const settings = row.querySelector('div.' + this.className + '-settings')
+      const col = row.dataset.setCol ? row.dataset.setCol : row.dataset.col
+      const select = settings.querySelector('select.' + this.className + '-settings-bgCol')
       let bgCol = false
-      let select = settings.querySelector('select.' + this.className + '-settings-bgCol')
 
       forEachArr(settings.querySelectorAll('div.' + this.className + '-settings-bgCol, div[data-col]'), (el) => {
         el.classList.remove('active')
@@ -461,40 +473,40 @@ class PageBuilder {
   }
 
   _createCol (row, exists = false, inner = '') {
-    let col = this._createEl('div', { 'class': this.className + '-col' })
+    const col = this._createEl('div', { class: this.className + '-col' })
 
     this._addColFunc(col)
 
-    let content = exists && row.querySelector('div.' + this.className + '-content') ? row.querySelector('div.' + this.className + '-content') : this._createEl('div', { 'class': this.className + '-content' }, inner)
+    const content = exists && row.querySelector('div.' + this.className + '-content') ? row.querySelector('div.' + this.className + '-content') : this._createEl('div', { class: this.className + '-content' }, inner)
 
     col.appendChild(content)
     row.appendChild(col)
-    let num = row.querySelectorAll('.' + this.className + '-col').length
+    const num = row.querySelectorAll('.' + this.className + '-col').length
     row.dataset.col = num < 7 ? num : 6
   }
 
   _addColFunc (col) {
-    let edit = this._createEl('button', {
-      'class': this.className + '-col-edit',
-      'title': 'Edit column',
-      'type': 'button'
+    const edit = this._createEl('button', {
+      class: this.className + '-col-edit',
+      title: 'Edit column',
+      type: 'button'
     }, `<i class="svg"></i>`)
     col.appendChild(edit)
     this._editContent(edit, col)
 
     if (this.options.edit) {
-      let del = this._createEl('button', {
-        'class': this.className + '-col-del',
-        'title': 'Remove column',
-        'type': 'button'
+      const del = this._createEl('button', {
+        class: this.className + '-col-del',
+        title: 'Remove column',
+        type: 'button'
       }, `<i class="svg"></i>`)
       col.appendChild(del)
       this._removeCol(del, col)
 
-      let setting = this._createEl('button', {
-        'class': this.className + '-col-settings',
-        'title': 'Settings',
-        'type': 'button'
+      const setting = this._createEl('button', {
+        class: this.className + '-col-settings',
+        title: 'Settings',
+        type: 'button'
       }, `<i class="svg"></i>`)
       col.appendChild(setting)
       this._openColSetting(setting, col)
@@ -517,9 +529,9 @@ class PageBuilder {
 
   _removeCol (el, column) {
     on(el, 'click', () => {
-      let parent = column.parentElement
+      const parent = column.parentElement
       parent.removeChild(column)
-      let num = parent.querySelectorAll('.' + this.className + '-col').length
+      const num = parent.querySelectorAll('.' + this.className + '-col').length
 
       if (num >= 1) {
         parent.dataset.col = num < 7 ? num : 6
@@ -530,42 +542,44 @@ class PageBuilder {
   }
 
   _createColSettings (column) {
-    let className = this.className + '-colSettings'
-    let _this = this
-    let [setting, classes, footer, text, select, close, save] = [
+    const className = this.className + '-colSettings'
+    const _this = this
+    const [setting, classes, footer, text, select, close, save] = [
       _this._createEl('div', {
-        'class': className
+        class: className
       }),
       _this._createEl('div', {
-        'class': className + '-classes'
+        class: className + '-classes'
       }),
       _this._createEl('div', {
-        'class': className + '-footer'
+        class: className + '-footer'
       }),
       _this._createEl('h3', {
-        'class': className + '-h3'
+        class: className + '-h3'
       }, `Col class`),
       _this._createEl('select', {
-        'class': className + '-select'
+        class: className + '-select'
       }),
       _this._createEl('button', {
-        'class': className + '-close',
-        'title': 'Close',
-        'type': 'button'
+        class: className + '-close',
+        title: 'Close',
+        type: 'button'
       }, `<i class="svg"></i> <span>Exit</span>`),
       _this._createEl('button', {
-        'class': className + '-save',
-        'title': 'Save',
-        'type': 'button'
+        class: className + '-save',
+        title: 'Save',
+        type: 'button'
       }, `<i class="svg"></i> <span>Save changes</span>`)
     ]
 
     forEachArr(('def, ' + _this.options.colClasses).split(', '), (el) => {
-      let option = _this._createEl('option', {
-        'value': el
+      const option = _this._createEl('option', {
+        value: el
       }, el)
 
-      if (el === 'def') option.innerText = `none`
+      if (el === 'def') {
+        option.innerText = `none`
+      }
 
       select.appendChild(option)
     })
@@ -584,7 +598,7 @@ class PageBuilder {
     })
 
     on(save, 'click', function () {
-      let val = select.value
+      const val = select.value
       if (val === 'def') {
         column.classList = _this.className + '-col'
       } else {
@@ -595,8 +609,8 @@ class PageBuilder {
 
   _openColSetting (el, column) {
     on(el, 'click', () => {
-      let cols = this.body.querySelectorAll('.changingCol')
-      let select = column.querySelector('.' + this.className + '-colSettings-select')
+      const cols = this.body.querySelectorAll('.changingCol')
+      const select = column.querySelector('.' + this.className + '-colSettings-select')
       forEachArr(cols, (el) => {
         el.classList.remove('changingCol')
       })
@@ -621,8 +635,8 @@ class PageBuilder {
   _editContent (el, col) {
     on(el, 'click', () => {
       this.editor.classList.add('show')
-      let content = col.querySelector('div.' + this.className + '-content')
-      let editor = this.editor.querySelector('div.' + this.textareaEditor)
+      const content = col.querySelector('div.' + this.className + '-content')
+      const editor = this.editor.querySelector('div.' + this.textareaEditor)
       editor.innerHTML = content.innerHTML
       this.options.setTinymceContent(editor, content.innerHTML)
       content.classList.add('changing')
@@ -631,10 +645,10 @@ class PageBuilder {
 
   _clickDoc () {
     on(document, 'mouseup', (event) => {
-      let block = this.wrapBlock.querySelector('.editing')
-      let col = this.body.querySelector('.changingCol')
+      const block = this.wrapBlock.querySelector('.editing')
+      const col = this.body.querySelector('.changingCol')
       if (block) {
-        let row = this.body.querySelector('.changing')
+        const row = this.body.querySelector('.changing')
 
         if (row && !row.contains(event.target)) {
           row.classList.remove('changing')
@@ -650,7 +664,7 @@ class PageBuilder {
   }
 
   _createEl (el, options = {}, inner = '') {
-    let elem = document.createElement(el)
+    const elem = document.createElement(el)
     forEachObj(options, (key, value) => {
       elem.setAttribute(key, value)
     })
@@ -661,36 +675,48 @@ class PageBuilder {
   }
 
   _getContent () {
-    let html = this.body.cloneNode(true)
-    let rows = html.querySelectorAll('div.' + this.className + '-row')
+    const html = this.body.cloneNode(true)
+    const rows = html.querySelectorAll('div.' + this.className + '-row')
 
     forEachArr(rows, (row) => {
-      let menu = row.querySelector('div.' + this.className + '-row-menu')
-      let settings = row.querySelector('div.' + this.className + '-settings')
+      const menu = row.querySelector('div.' + this.className + '-row-menu')
+      const settings = row.querySelector('div.' + this.className + '-settings')
 
-      if (menu) row.removeChild(menu)
-      if (settings) row.removeChild(settings)
+      if (menu) {
+        row.removeChild(menu)
+      }
+      if (settings) {
+        row.removeChild(settings)
+      }
 
       let cols = row.querySelectorAll('div.' + this.className + '-col')
 
       if (cols.length > 1) {
         forEachArr(cols, (col) => {
-          let del = col.querySelector('.' + this.className + '-col-del')
-          let edit = col.querySelector('.' + this.className + '-col-edit')
-          let content = col.querySelector('.' + this.className + '-content')
-          let settingsBtn = col.querySelector('.' + this.className + '-col-settings')
-          let colSettings = col.querySelector('.' + this.className + '-colSettings')
+          const del = col.querySelector('.' + this.className + '-col-del')
+          const edit = col.querySelector('.' + this.className + '-col-edit')
+          const content = col.querySelector('.' + this.className + '-content')
+          const settingsBtn = col.querySelector('.' + this.className + '-col-settings')
+          const colSettings = col.querySelector('.' + this.className + '-colSettings')
 
           delAttr(content, ['id', 'style', 'aria-hidden'])
 
-          if (del) col.removeChild(del)
-          if (edit) col.removeChild(edit)
-          if (settingsBtn) col.removeChild(settingsBtn)
-          if (colSettings) col.removeChild(colSettings)
+          if (del) {
+            col.removeChild(del)
+          }
+          if (edit) {
+            col.removeChild(edit)
+          }
+          if (settingsBtn) {
+            col.removeChild(settingsBtn)
+          }
+          if (colSettings) {
+            col.removeChild(colSettings)
+          }
         })
       } else if (cols.length === 1) {
         cols = cols[0]
-        let content = cols.querySelector('div.' + this.className + '-content')
+        const content = cols.querySelector('div.' + this.className + '-content')
 
         delAttr(content, ['id', 'style', 'aria-hidden'])
 
@@ -737,8 +763,8 @@ function checkSelector (selector) {
 }
 
 function forEachObj (obj, callback) {
-  for (let prop in obj) {
-    if (obj.hasOwnProperty(prop)) {
+  for (const prop in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, prop)) {
       callback(prop, obj[prop])
     }
   }
