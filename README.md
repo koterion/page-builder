@@ -49,10 +49,17 @@ or
 option | type | desc |
 :--- | :---: | :--- |
 [tinymceSettings](#tinymce) | object | TinyMCE settings |
-[height](#height)| string | Workplace height|
+height| string | Workplace height|
 [rowClasses](#rowclasses) | string | Row class names. Can use from html data.|
 [colClasses](#colClasses) | string | Col class names. Can use from html data.|
-[edit](#edit) | boolean | Turn on/off editing blocks. Can use from html data.|
+edit | boolean | Turn on/off editing blocks. Can use from html data.|
+draggable | boolean | Turn on/off dragged cols & row
+
+You can use option in dataset like:
+
+```html
+<div data-height="500px">HTML</div>
+```
 
 ##Methods
 
@@ -81,13 +88,6 @@ Initialize TinyMCE. Use `className` for selector
 }
 ```
 
-### height
-```js
-{
-  height: '500px'
-}
-```
-
 ### rowClasses
 Use in current format, separator ', '
 ```js
@@ -106,25 +106,12 @@ or
 Use in current format, separator ', '
 ```js
 {
-  colClasses: 'full'
+  colClasses: 'full, text'
 }
 ```
 
 or
 
 ```html
-<div data-colClasses="first, second, third">HTML</div>
-```
-
-### edit
-```js
-{
-  edit: true
-}
-```
-
-or
-
-```html
-<div data-edit="true">HTML</div>
+<div data-colClasses="full, text">HTML</div>
 ```

@@ -34,6 +34,7 @@ const defaults = {
   rowClasses: 'first, sec, third',
   colClasses: 'full',
   edit: true,
+  draggable: true,
   tinymceSettings: (className) => {
     tinymce.init({
       menubar: false,
@@ -68,10 +69,7 @@ class PageBuilder {
     this.textareaEditor = this.className + '-editor-textarea'
 
     const customOptions = options || {}
-    this.options = {}
-    forEachObj(defaults, (key, value) => {
-      this.options[key] = (Object.prototype.hasOwnProperty.call(customOptions, key)) ? customOptions[key] : value
-    })
+    this.options = { ...defaults, ...customOptions }
   }
 
   _init () {
@@ -90,17 +88,18 @@ class PageBuilder {
     this.value = this.selector.value !== undefined ? this.selector.value : this.selector.innerHTML
     this.selector.style.display = 'none'
 
-    if (this.selector.dataset.edit) {
-      this.options.edit = this.selector.dataset.edit === 'true'
+    const trans = {
+      rowclasses: 'rowClasses',
+      colclasses: 'colClasses'
     }
 
-    if (this.selector.dataset.rowclasses) {
-      this.options.rowClasses = this.selector.dataset.rowclasses
-    }
-
-    if (this.selector.dataset.colclasses) {
-      this.options.colClasses = this.selector.dataset.colclasses
-    }
+    forEachObj(this.selector.dataset, (key, value) => {
+      if (trans[key]) {
+        this.options[trans[key]] = value
+      } else {
+        this.options[key] = value
+      }
+    })
   }
 
   _createInterface () {
@@ -324,12 +323,14 @@ class PageBuilder {
       class: className
     })
 
-    const settings = this._createEl('button', {
-      class: className + '-settings',
-      title: 'Settings for row',
-      'data-role': 'settingRow',
-      type: 'button'
-    }, `<i class="svg"></i> <span>Settings</span>`)
+    const [settings] = [
+      this._createEl('button', {
+        class: className + '-settings',
+        title: 'Settings for row',
+        'data-role': 'settingRow',
+        type: 'button'
+      }, `<i class="svg"></i> <span>Settings</span>`)
+    ]
 
     const menu = {
       block: this._createEl('div', { class: className + '-block' }),
@@ -388,6 +389,10 @@ class PageBuilder {
         this._createRowSettings(el)
       }
 
+      if (this.options.draggable) {
+        this._drag(el, '.' + this.className + '-row', 'changing', '.' + this.className + '-col')
+      }
+
       const num = el.dataset.col
 
       if (num < 1) {
@@ -408,15 +413,129 @@ class PageBuilder {
 
         this.body.appendChild(row)
 
-        if (this.options.edit) {
-          this._createRowMenu(row)
-          this._createRowSettings(row)
-          this._connectMenuFunc(row)
+        this._createRowMenu(row)
+        this._createRowSettings(row)
+        this._connectMenuFunc(row)
+
+        if (this.options.draggable) {
+          this._drag(row, '.' + this.className + '-row', 'changing', '.' + this.className + '-col')
         }
 
         this._createCol(row)
         this.rows = this.body.querySelectorAll('div.' + this.className + '-row')
       })
+    }
+  }
+
+  _drag (selector, closest, disabledClass = undefined, disabledClosest = undefined) {
+    const _this = this
+
+    on(selector, 'mousedown', dragged)
+    on(selector, 'touchstart', dragged)
+
+    function dragged (event) {
+      const clone = selector.cloneNode(true)
+      const coords = getCoords(selector)
+      const shiftX = event.clientX - coords.left
+      const shiftY = event.clientY - coords.top
+      const moveClass = _this.className + '-move'
+      const check = !event.target.closest(disabledClosest) && !selector.classList.contains(disabledClass) && !event.target.closest('button') && !_this.body.classList.contains('editing')
+      const closestClassName = closest.replace('.', '')
+      const row = selector.closest('.' + _this.className + '-row')
+      let move = false
+
+      if (check) {
+        clone.style.width = selector.scrollWidth + 'px'
+        clone.style.height = selector.scrollHeight + 'px'
+        clone.classList.add(_this.className + '-clone')
+
+        on(document, 'mousemove', draggedStart)
+        on(document, 'touchmove', draggedStart)
+
+        on(selector, 'mouseup', draggedStop)
+        on(selector, 'touchend', draggedStop)
+      }
+
+      function draggedStart (event) {
+        moveAt(event)
+
+        if (!move) {
+          move = true
+          document.body.appendChild(clone)
+        }
+
+        on(clone, 'mouseup', draggedStop)
+        on(clone, 'touchend', draggedStop)
+      }
+
+      function draggedStop (event) {
+        document.removeEventListener('mousemove', draggedStart)
+        document.removeEventListener('touchmove', draggedStart)
+
+        if (move) {
+          const el = getElBehind(clone, event.clientX, event.clientY)
+          const parent = el ? el.closest(closest) : null
+          const parentRow = parent ? parent.closest('.' + _this.className + '-row') : null
+
+          if (selector.classList.contains(_this.className + '-col') && parentRow && row && parentRow !== row) {
+            _this._updateColCount(row)
+            _this._updateColCount(parentRow)
+          }
+          document.body.removeChild(clone)
+        }
+
+        move = false
+        clone.removeEventListener('mouseup', draggedStop)
+        clone.removeEventListener('touchend', draggedStop)
+
+        selector.removeEventListener('mouseup', draggedStop)
+        selector.removeEventListener('touchend', draggedStop)
+        selector.classList.remove(moveClass)
+      }
+
+      function moveAt (event) {
+        clone.style.left = event.clientX - shiftX + 'px'
+        clone.style.top = event.clientY - shiftY + 'px'
+        selector.classList.add(moveClass)
+
+        const el = getElBehind(clone, event.clientX, event.clientY)
+        const parent = el ? el.closest(closest) : null
+
+        if (parent && !parent.classList.contains(moveClass)) {
+          const behindElCoords = getCoords(parent)
+          const behindElHeight = parent.scrollHeight
+          const top = behindElCoords.top + behindElHeight / 2
+
+          if (event.clientY > top) {
+            if (parent.nextElementSibling && parent.nextElementSibling.classList.contains(closestClassName)) {
+              parent.parentNode.insertBefore(selector, parent.nextElementSibling)
+            } else {
+              parent.parentNode.appendChild(selector)
+            }
+          } else {
+            if (!parent.previousElementSibling || (parent.previousElementSibling && !parent.previousElementSibling.classList.contains(moveClass))) {
+              parent.parentNode.insertBefore(selector, parent)
+            }
+          }
+        }
+      }
+    }
+
+    function getElBehind (point = {}, x, y) {
+      const state = point.className
+      point.className += ` ${_this.className}-hide`
+      const el = document.elementFromPoint(x, y)
+      point.className = state
+      return el
+    }
+
+    function getCoords (elem) {
+      const box = elem.getBoundingClientRect()
+
+      return {
+        top: box.top,
+        left: box.left
+      }
     }
   }
 
@@ -481,8 +600,17 @@ class PageBuilder {
 
     col.appendChild(content)
     row.appendChild(col)
+    this._updateColCount(row)
+  }
+
+  _updateColCount (row) {
     const num = row.querySelectorAll('.' + this.className + '-col').length
-    row.dataset.col = num < 7 ? num : 6
+
+    if (num > 0) {
+      row.dataset.col = num < 7 ? num : 6
+    } else {
+      row.parentNode.removeChild(row)
+    }
   }
 
   _addColFunc (col) {
@@ -511,6 +639,10 @@ class PageBuilder {
       col.appendChild(setting)
       this._openColSetting(setting, col)
       this._createColSettings(col)
+
+      if (this.options.draggable) {
+        this._drag(col, '.' + this.className + '-col', 'changingCol')
+      }
     }
   }
 
@@ -531,13 +663,7 @@ class PageBuilder {
     on(el, 'click', () => {
       const parent = column.parentElement
       parent.removeChild(column)
-      const num = parent.querySelectorAll('.' + this.className + '-col').length
-
-      if (num >= 1) {
-        parent.dataset.col = num < 7 ? num : 6
-      } else {
-        parent.parentNode.removeChild(parent)
-      }
+      this._updateColCount(parent)
     })
   }
 
@@ -788,4 +914,23 @@ if (typeof window === 'undefined') {
   global.pageBuilder = pageBuilder
 } else {
   window.pageBuilder = pageBuilder
+}
+
+if (!Element.prototype.matches) {
+  Element.prototype.matches = Element.prototype.msMatchesSelector ||
+    Element.prototype.webkitMatchesSelector
+}
+
+if (!Element.prototype.closest) {
+  Element.prototype.closest = function (s) {
+    let el = this
+
+    do {
+      if (el.matches(s)) {
+        return el
+      }
+      el = el.parentElement || el.parentNode
+    } while (el !== null && el.nodeType === 1)
+    return null
+  }
 }
