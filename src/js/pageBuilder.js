@@ -501,7 +501,7 @@ class PageBuilder {
         const el = getElBehind(clone, event.clientX, event.clientY)
         const parent = el ? el.closest(closest) : null
 
-        if (parent && !parent.classList.contains(moveClass)) {
+        if (parent && !parent.classList.contains(moveClass) && !parent.classList.contains(_this.className + '-clone')) {
           const behindElCoords = getCoords(parent)
           const behindElHeight = parent.scrollHeight
           const top = behindElCoords.top + behindElHeight / 2
