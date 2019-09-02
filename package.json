@@ -1,6 +1,6 @@
 {
   "name": "@koterion/page_builder",
-  "version": "1.1.8",
+  "version": "1.2.0",
   "description": "Plugin for create page structure",
   "scripts": {
     "dev": "npm run development",
@@ -11,23 +11,19 @@
     "prod": "npm run production",
     "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
   },
+  "standard": {
+    "envs": {
+      "browser": true,
+      "jquery": true
+    }
+  },
   "browserslist": [
-    "> 1%",
+    "> 5%",
     "last 4 versions",
     "ie >= 10",
     "Firefox ESR",
     "Safari >= 10"
   ],
-  "eslintConfig": {
-    "env": {
-      "browser": true,
-      "node": true,
-      "jasmine": true,
-      "jquery": true,
-      "es6": true,
-      "prefer-const": false
-    }
-  },
   "files": [
     "dist"
   ],
@@ -45,9 +41,9 @@
     "browser-sync-webpack-plugin": "^2.2.2",
     "cross-env": "^5.2.0",
     "laravel-mix": "^4.1.2",
-    "sass": "^1.22.7",
-    "sass-loader": "^7.1.0",
-    "tinymce": "^5.0.12",
+    "sass": "^1.22.10",
+    "sass-loader": "^7.3.1",
+    "tinymce": "^5.0.14",
     "vue-template-compiler": "^2.6.10",
     "autoprefixer": "^9.6.1",
     "sanitize.css": "^11.0.0",

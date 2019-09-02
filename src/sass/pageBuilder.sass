@@ -102,12 +102,13 @@ $light: #fff
       margin: 0 -15px
       padding: 10px 15px
       background-color: $light
+      cursor: grab
 
       &-block
         display: none
         align-items: center
 
-      &-settings, &-delete, &-edit, &-column
+      &-settings, &-delete, &-edit, &-column, &-move
         display: inline-flex
         align-items: center
         cursor: pointer
@@ -122,7 +123,7 @@ $light: #fff
           height: 17px
           fill: black
 
-      &-delete, &-edit, &-column
+      &-delete, &-edit, &-column, &-move
         background-color: $light
         border: 1px solid transparent
         padding: 7px 9px
@@ -192,6 +193,7 @@ $light: #fff
     background-color: $gray-light
     padding-top: 40px
     padding-bottom: 15px
+    cursor: grab
 
     &Settings
       display: none
@@ -365,6 +367,9 @@ $light: #fff
 
   &-content
     padding: 10px 15px
+
+    img
+      max-width: 100%
 
   &-editor
     position: fixed
@@ -596,6 +601,17 @@ $light: #fff
 
       &:active
         border-color: #5cfd95
+
+  &-move
+    opacity: .2
+
+  &-hide
+    display: none
+
+  &-clone
+    position: fixed
+    cursor: grabbing
+    margin: 0
 
   .first
     background-color: #ff005d
