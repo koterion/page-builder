@@ -15,6 +15,12 @@ Include [TinyMCE](https://www.tiny.cloud/docs/quick-start/#step1includethetinymc
 <script src="https://cloud.tinymce.com/5/tinymce.min.js?apiKey=your_API_key"></script>
 ```
 
+Include [Material Icons](https://material.io/resources/icons/?style=baseline)
+
+```html
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+```
+
 ### css
 ```css
 @import url('~@koterion/page_builder/dist/css/pageBuilder.css');

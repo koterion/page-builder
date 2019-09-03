@@ -1,6 +1,6 @@
 {
   "name": "@koterion/page_builder",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Plugin for create page structure",
   "scripts": {
     "dev": "npm run development",
