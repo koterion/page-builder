@@ -30,7 +30,7 @@ const pageBuilder = {
 }
 
 const defaults = {
-  height: '500px',
+  height: 'auto',
   rowClasses: 'first, sec, third',
   colClasses: 'full',
   edit: true,
@@ -120,7 +120,7 @@ class PageBuilder {
       add: this._createEl('button', {
         class: this.className + '-menu-item-add',
         type: 'button'
-      }, `<i class="svg"></i> <span>Add block</span>`)
+      }, `<i class="svg">playlist_add</i> <span>Add block</span>`)
     }
 
     this.wrapBlock.appendChild(this.menu)
@@ -159,12 +159,12 @@ class PageBuilder {
         class: className + '-close',
         title: 'Close',
         type: 'button'
-      }, `<i class="svg"></i> <span>Exit (without saving changes)</span>`),
+      }, `<i class="svg">close</i> <span>Exit (without saving changes)</span>`),
       _this._createEl('button', {
         class: className + '-save',
         title: 'Save',
         type: 'button'
-      }, `<i class="svg"></i> <span>Save changes</span>`),
+      }, `<i class="svg">save</i> <span>Save changes</span>`),
       _this._createEl('div', { class: _this.textareaEditor })
     ]
 
@@ -220,12 +220,12 @@ class PageBuilder {
         class: className + '-close',
         title: 'Close',
         type: 'button'
-      }, `<i class="svg"></i> <span>Exit (without saving changes)</span>`),
+      }, `<i class="svg">close</i> <span>Exit (without saving changes)</span>`),
       _this._createEl('button', {
         class: className + '-save',
         title: 'Save',
         type: 'button'
-      }, `<i class="svg"></i> <span>Save changes</span>`),
+      }, `<i class="svg">save</i> <span>Save changes</span>`),
       _this._createEl('h3', {
         class: className + '-h3'
       }, `Row class`),
@@ -329,7 +329,7 @@ class PageBuilder {
         title: 'Settings for row',
         'data-role': 'settingRow',
         type: 'button'
-      }, `<i class="svg"></i> <span>Settings</span>`)
+      }, `<i class="svg">settings_applications</i> <span>Settings</span>`)
     ]
 
     const menu = {
@@ -339,17 +339,17 @@ class PageBuilder {
           title: 'Edit row style',
           'data-role': 'editRow',
           type: 'button'
-        }, `<i class="svg"></i> <span>Edit</span>`),
+        }, `<i class="svg">edit</i> <span>Edit</span>`),
         column: this._createEl('button', {
           title: 'Add column',
           'data-role': 'addCol',
           type: 'button'
-        }, `<i class="svg"></i> <span>Add column</span>`),
+        }, `<i class="svg">playlist_add</i> <span>Add column</span>`),
         delete: this._createEl('button', {
           title: 'Remove this row',
           'data-role': 'delRow',
           type: 'button'
-        }, `<i class="svg"></i> <span>Remove</span>`)
+        }, `<i class="svg">delete_forever</i> <span>Remove</span>`)
       }
     }
 
@@ -433,7 +433,9 @@ class PageBuilder {
     on(selector, 'mousedown', dragged)
     on(selector, 'touchstart', dragged)
 
-    function dragged (event) {
+    function dragged () {
+      event.preventDefault()
+
       const clone = selector.cloneNode(true)
       const coords = getCoords(selector)
       const shiftX = event.clientX - coords.left
@@ -443,32 +445,42 @@ class PageBuilder {
       const closestClassName = closest.replace('.', '')
       const row = selector.closest('.' + _this.className + '-row')
       let move = false
+      let touch = null
 
       if (check) {
         clone.style.width = selector.scrollWidth + 'px'
         clone.style.height = selector.scrollHeight + 'px'
         clone.classList.add(_this.className + '-clone')
+        let sec = 0
 
-        on(document, 'mousemove', draggedStart)
-        on(document, 'touchmove', draggedStart)
+        touch = setInterval(() => {
+          if (sec === 1) {
+            on(document, 'mousemove', draggedStart)
+            on(document, 'touchmove', draggedStart)
+          }
+          sec++
+        }, 25)
 
         on(selector, 'mouseup', draggedStop)
         on(selector, 'touchend', draggedStop)
       }
 
-      function draggedStart (event) {
+      function draggedStart () {
+        clearTouch()
         moveAt(event)
 
         if (!move) {
           move = true
-          document.body.appendChild(clone)
+          _this.body.appendChild(clone)
         }
 
         on(clone, 'mouseup', draggedStop)
         on(clone, 'touchend', draggedStop)
       }
 
-      function draggedStop (event) {
+      function draggedStop () {
+        clearTouch()
+
         document.removeEventListener('mousemove', draggedStart)
         document.removeEventListener('touchmove', draggedStart)
 
@@ -481,7 +493,7 @@ class PageBuilder {
             _this._updateColCount(row)
             _this._updateColCount(parentRow)
           }
-          document.body.removeChild(clone)
+          _this.body.removeChild(clone)
         }
 
         move = false
@@ -517,6 +529,13 @@ class PageBuilder {
               parent.parentNode.insertBefore(selector, parent)
             }
           }
+        }
+      }
+
+      function clearTouch () {
+        if (touch) {
+          clearInterval(touch)
+          touch = null
         }
       }
     }
@@ -618,7 +637,7 @@ class PageBuilder {
       class: this.className + '-col-edit',
       title: 'Edit column',
       type: 'button'
-    }, `<i class="svg"></i>`)
+    }, `<i class="svg">edit</i>`)
     col.appendChild(edit)
     this._editContent(edit, col)
 
@@ -627,7 +646,7 @@ class PageBuilder {
         class: this.className + '-col-del',
         title: 'Remove column',
         type: 'button'
-      }, `<i class="svg"></i>`)
+      }, `<i class="svg">delete_forever</i>`)
       col.appendChild(del)
       this._removeCol(del, col)
 
@@ -635,7 +654,7 @@ class PageBuilder {
         class: this.className + '-col-settings',
         title: 'Settings',
         type: 'button'
-      }, `<i class="svg"></i>`)
+      }, `<i class="svg">settings_applications</i>`)
       col.appendChild(setting)
       this._openColSetting(setting, col)
       this._createColSettings(col)
@@ -690,12 +709,12 @@ class PageBuilder {
         class: className + '-close',
         title: 'Close',
         type: 'button'
-      }, `<i class="svg"></i> <span>Exit</span>`),
+      }, `<i class="svg">close</i> <span>Exit</span>`),
       _this._createEl('button', {
         class: className + '-save',
         title: 'Save',
         type: 'button'
-      }, `<i class="svg"></i> <span>Save changes</span>`)
+      }, `<i class="svg">save</i> <span>Save changes</span>`)
     ]
 
     forEachArr(('def, ' + _this.options.colClasses).split(', '), (el) => {
